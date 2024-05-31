@@ -1,5 +1,5 @@
 # ignore all `.pyc` file
-.*pyc
+*.pyc
 **/__pycache__/
 # ignore all config file in vscode
 **/.vscode/
