@@ -1,0 +1,8 @@
+# ignore all `.pyc` file
+.*pyc
+**/__pycache__/
+# ignore all config file in vscode
+**/.vscode/
+# ignore all large files: `.pth` model parameter, `./data` dataset
+*.pth
+**/data/
