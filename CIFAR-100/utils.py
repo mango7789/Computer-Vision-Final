@@ -1,10 +1,23 @@
 import os
+import random
+import torch
 import torchvision
 import torch.nn as nn
 from torchvision import transforms
 import torchvision.models as models
 from torch.utils.data import DataLoader
 from transformers import ViTForImageClassification
+
+
+def seed_everything(seed: int=None):
+    """
+    Set the random seed for the whole neural network.
+    """
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
 
 
 def get_cifar_dataloader(root: str='./data/', batch_size: int=64, num_workers: int=2) -> tuple[DataLoader]:
@@ -24,6 +37,7 @@ def get_cifar_dataloader(root: str='./data/', batch_size: int=64, num_workers: i
     
     # transform the training and testing dataset
     transform_train = transforms.Compose([
+        transforms.Resize((224, 224)),
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
@@ -34,6 +48,7 @@ def get_cifar_dataloader(root: str='./data/', batch_size: int=64, num_workers: i
     ])
 
     transform_test = transforms.Compose([
+        transforms.Resize((224, 224)),
         transforms.ToTensor(),
         transforms.Normalize(
             mean=(0.5071, 0.4867, 0.4408), 
@@ -89,4 +104,4 @@ def count_model_parameters(model: nn.Module) -> int:
 if __name__ == '__main__':    
     # print(count_model_parameters(get_cnn_model()))
     # print(count_model_parameters(get_vit_model()))
-    print(get_vit_model().classifier.parameters())
+    print(get_cnn_model())
