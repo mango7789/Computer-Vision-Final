@@ -147,6 +147,7 @@ def train_with_params(
     
     logging.basicConfig(
         level=logging.DEBUG,
+        force=True,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
             logging.FileHandler(log_file_path),  
