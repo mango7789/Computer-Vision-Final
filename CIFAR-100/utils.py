@@ -75,7 +75,7 @@ def get_cnn_model() -> models.resnet50:
     """
     Return the pretrained Resnet-50 model on CIFAR-100 dataset.
     """
-    model_cnn = models.resnet50(weights='ResNet50_Weights.IMAGENET1K_V1')
+    model_cnn = models.resnet50(weights='ResNet50_Weights.IMAGENET1K_V2')
     # modify the output layer
     num_features = model_cnn.fc.in_features
     model_cnn.fc = nn.Linear(num_features, 100)
