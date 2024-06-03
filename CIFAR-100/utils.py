@@ -7,6 +7,7 @@ from torchvision import transforms
 import torchvision.models as models
 from torch.utils.data import DataLoader
 from transformers import ViTForImageClassification, ViTConfig
+from typing import List, Tuple
 
 
 def seed_everything(seed: int=None):
@@ -20,7 +21,7 @@ def seed_everything(seed: int=None):
     torch.backends.cudnn.deterministic = True
 
 
-def get_cifar_dataloader(root: str='./data/', batch_size: int=64, num_workers: int=2) -> tuple[DataLoader]:
+def get_cifar_dataloader(root: str='./data/', batch_size: int=64, num_workers: int=2) -> Tuple[DataLoader]:
     """
     Get the train and test Dataloader of the CIFAR-100 dataset. If the dataset doesn't exist in 
     the root directory, it will be downloaded into the `root` directory automatically.
@@ -38,7 +39,9 @@ def get_cifar_dataloader(root: str='./data/', batch_size: int=64, num_workers: i
     # transform the training and testing dataset
     transform_train = transforms.Compose([
         transforms.RandomCrop(size=32, padding=4),
+        transforms.Resize((224, 224)),
         transforms.RandomHorizontalFlip(),
+        transforms.RandomRotation(degrees=10),
         transforms.ToTensor(),
         transforms.Normalize(
             mean=(0.5071, 0.4867, 0.4408), 
@@ -47,6 +50,7 @@ def get_cifar_dataloader(root: str='./data/', batch_size: int=64, num_workers: i
     ])
 
     transform_test = transforms.Compose([
+        transforms.Resize((224, 224)),
         transforms.ToTensor(),
         transforms.Normalize(
             mean=(0.5071, 0.4867, 0.4408), 
@@ -69,58 +73,75 @@ def get_cifar_dataloader(root: str='./data/', batch_size: int=64, num_workers: i
 
 def get_cnn_model() -> models.resnet50:
     """
-    Return the pretrained Resnet-50 model on CIFAR100 dataset.
+    Return the pretrained Resnet-50 model on CIFAR-100 dataset.
     """
-    class ModifiedResNet50(nn.Module):
-        def __init__(self, num_classes :int=1000): 
-            super(ModifiedResNet50, self).__init__()
-            self.resnet50 = models.resnet50(pretrained=True)
-            
-            # modify the first convolutional layer to accept 32x32 input images
-            self.resnet50.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
-            self.resnet50.bn1 = nn.BatchNorm2d(64)
-            self.resnet50.relu = nn.ReLU(inplace=True)
-            self.resnet50.maxpool = nn.Identity()  # Remove the maxpool layer to avoid reducing the spatial dimensions too much
+    model_cnn = models.resnet50(weights='ResNet50_Weights.IMAGENET1K_V1')
+    # modify the output layer
+    num_features = model_cnn.fc.in_features
+    model_cnn.fc = nn.Linear(num_features, 100)
+    return model_cnn
 
-            # adjust the number of input features for the fully connected layer
-            num_ftrs = self.resnet50.fc.in_features
-            self.resnet50.fc = nn.Linear(num_ftrs, num_classes)
-            
-        def forward(self, x: torch.Tensor) -> torch.Tensor:
-            x = self.resnet50.conv1(x)
-            x = self.resnet50.bn1(x)
-            x = self.resnet50.relu(x)
-            # skip the maxpool layer since it's replaced by nn.Identity()
-            x = self.resnet50.layer1(x)
-            x = self.resnet50.layer2(x)
-            x = self.resnet50.layer3(x)
-            x = self.resnet50.layer4(x)
-            x = self.resnet50.avgpool(x)
-            x = torch.flatten(x, 1)
-            x = self.resnet50.fc(x)
-            return x
-        
-    return ModifiedResNet50().resnet50
 
 def get_vit_model(path: str='WinKawaks/vit-small-patch16-224') -> ViTForImageClassification:
     """
-    Return the pretrained `path` ViT model on CIFAR100 dataset.
+    Return the pretrained `path` ViT model on CIFAR-100 dataset.
     
     Args:
     - path: pretrained_model_name_or_path (str or os.PathLike, *optional*)
     """
-    config = ViTConfig.from_pretrained(path)
-    
-    # adjust the configuration for 32x32 input images and number of clases in CIFAR100
-    config.image_size = 32   
-    config.hidden_size = 384 
-    config.num_channels = 3   
-    config.num_classes = 100  
-    
-    # load the modified model
-    model_vit = ViTForImageClassification(config)  
-      
+    model_vit = ViTForImageClassification.from_pretrained(path, num_labels=100, ignore_mismatched_sizes=True)
     return model_vit
+
+
+class CutMix:
+    """
+    CutMix for data augumentation of the CIFAR-100 dataset.
+    """
+    def __init__(self, beta :float=1.0):
+        self.beta = beta
+
+    def __call__(self, x: torch.Tensor, y: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, float]:
+        
+        if self.beta > 0 and torch.rand(1).item() > 0.5:
+            # sample lambda from a beta distribution
+            lam = torch.distributions.beta.Beta(self.beta, self.beta).sample().item()
+            
+            # randomly shuffle the batch
+            rand_index = torch.randperm(x.size()[0])
+            target_a = y
+            target_b = y[rand_index]
+            
+            # replace a portion of the input image with another image
+            bbx1, bby1, bbx2, bby2 = self._rand_bbox(x.size(), lam)
+            x[:, :, bbx1:bbx2, bby1:bby2] = x[rand_index, :, bbx1:bbx2, bby1:bby2]
+            
+            # adjust lambda to consider the clipped area
+            lam = 1 - ((bbx2 - bbx1) * (bbx2 - bbx1) / (x.size()[-1] * x.size()[-2]))
+            return x, target_a, target_b, lam
+        
+        return x, y, y, 1.0
+
+    def _rand_bbox(self, size: torch.Tensor, lam: float) -> Tuple:
+        """
+        Generate a random bounding box for the images to apply CutMix.
+        """
+        W = size[2]
+        H = size[3]
+        cut_rat = torch.sqrt(torch.tensor(1.0 - lam))
+        cut_w = torch.tensor(int(W * cut_rat)).item()
+        cut_h = torch.tensor(int(H * cut_rat)).item()
+
+        # generate random center of point
+        cx = torch.randint(0, W, (1,)).item()
+        cy = torch.randint(0, H, (1,)).item()
+
+        # calculate the coordinates of the bbox
+        bbx1 = torch.clamp(cx - cut_w // 2, 0, W)
+        bby1 = torch.clamp(cy - cut_h // 2, 0, H)
+        bbx2 = torch.clamp(cx + cut_w // 2, 0, W)
+        bby2 = torch.clamp(cy + cut_h // 2, 0, H)
+
+        return bbx1, bby1, bbx2, bby2
 
 
 def count_model_parameters(model: nn.Module) -> int:

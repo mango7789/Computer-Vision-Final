@@ -2,7 +2,8 @@ import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from utils import seed_everything, get_cifar_dataloader, get_cnn_model, get_vit_model
+from typing import Literal, List, Tuple
+from utils import seed_everything, get_cifar_dataloader, get_cnn_model, get_vit_model, CutMix
 # ignore the warnings
 import warnings
 warnings.filterwarnings('ignore')
@@ -10,7 +11,7 @@ warnings.filterwarnings('ignore')
 import logging
 
 
-def calculate_topk_correct(output: torch.Tensor, target: torch.Tensor, topk=(1, 5)) -> list[int]:
+def calculate_topk_correct(output: torch.Tensor, target: torch.Tensor, topk=(1, 5)) -> List[int]:
     """
     Computes the top-k correct samples for the specified values of k.
 
@@ -37,10 +38,11 @@ def calculate_topk_correct(output: torch.Tensor, target: torch.Tensor, topk=(1, 
 
 
 def train_with_params(
-        nn_name: str='CNN'|'ViT',
+        nn_name: Literal['CNN', 'ViT'],
         epochs: int=10, 
         ft_lr: float=0.0001, 
         fc_lr: float=0.001,
+        criterion: nn.Module=nn.CrossEntropyLoss(),
         save: bool=False,
         **kwargs
     ):
@@ -48,10 +50,11 @@ def train_with_params(
     Fine-Tuning the ResNet-18 and ViT(small) pretrained model on the CIFAR100 dataset with given paramters.
     
     Args:
+    - nn_name: The type of the neural network, should be in ['CNN', 'ViT'].
     - epochs: Number of training epochs, default is 10. 
     - ft_lr: Fine-tuning learning rate, the learning rate except the last fc layer.
     - fc_lr: Fully-connected learning rate, the learning rate of the last fc layer.
-    - nn_name: The type of the neural network, should be in 'cnn' and 'vit'.
+    - criterion: The loss function of the neural network.
     - save: Boolean, whether the model should be saved.
     - **kwargs: include `seed`, `batch_size`, `momentum`, `gamma`, `step_size` and other hyper-parameters.
     """
@@ -68,14 +71,15 @@ def train_with_params(
     batch_size = kwargs.pop('batch_size', 64)
     train_loader, test_loader = get_cifar_dataloader(batch_size=batch_size)
     
-    # get the loss criterion
-    criterion = nn.CrossEntropyLoss()
+    # # get the loss criterion
+    # criterion = nn.CrossEntropyLoss()
     
     # pop other hyper-parameters from the kwargs dict
     momentum = kwargs.pop('momentum', 0.9)
     gamma = kwargs.pop('gamma', 0.1)
     step_size = kwargs.pop('step_size', 10)
     weight_decay = kwargs.pop('weight_decay', 1e-4)
+    beta = kwargs.pop('beta', 1.0)
     
     # get the model and corresponding optimizer
     nn_name = nn_name.lower()
@@ -136,6 +140,7 @@ def train_with_params(
     ############################################################################
     best_acc = 0.
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    cutmix = CutMix(beta)
     
     for epoch in epochs:
         '''Train'''
@@ -146,9 +151,14 @@ def train_with_params(
         for inputs, labels in train_loader:
             
             inputs, labels = inputs.to(device), labels.to(device)
-            outputs = model(inputs)
+            inputs, targets_a, targets_b, lam = cutmix(inputs, labels)
             
-            loss = criterion(outputs, labels)
+            if nn_name == 'ViT':
+                outputs = model(pixel_values=inputs).logits
+            elif nn_name == 'CNN':
+                outputs = model(inputs)
+            
+            loss = lam * criterion(outputs, targets_a) + (1 - lam) * criterion(outputs, targets_b)
             loss.backward()
 
             optimizer.step()
@@ -174,7 +184,11 @@ def train_with_params(
             for inputs, labels in test_loader:
                 
                 inputs, labels = inputs.to(device), labels.to(device)
-                outputs = model(inputs)
+                
+                if nn_name == 'ViT':
+                    outputs = model(pixel_values=inputs).logits
+                elif nn_name == 'CNN':
+                    outputs = model(inputs)
                 
                 top1, top5 = calculate_topk_correct(outputs, labels, topk=(1, 5))
                 correct_top1 += top1
