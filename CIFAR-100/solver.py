@@ -10,7 +10,7 @@ warnings.filterwarnings('ignore')
 # logger
 import logging
 # progress bar
-import tqdm
+from tqdm import tqdm
 
 def calculate_topk_correct(output: torch.Tensor, target: torch.Tensor, topk=(1, 5)) -> List[int]:
     """
@@ -72,7 +72,7 @@ def train_with_params(
     """
     
     ############################################################################
-    #                            initialization                                #     
+    #                            initialization                                #
     ############################################################################
     
     # set the random seed to make the results reproducible
@@ -142,7 +142,7 @@ def train_with_params(
     # set the configuration for the logger
     log_directory = os.path.join(output_dir, nn_name)
     if not os.path.exists(log_directory):
-        os.mkdir(log_directory)
+        os.makedirs(log_directory)
     log_file_path = os.path.join(log_directory, '{}-{}-{}-{}-{}.log'.format(epochs, ft_lr, fc_lr, gamma, step_size))
     
     logging.basicConfig(
@@ -163,7 +163,7 @@ def train_with_params(
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     cutmix = CutMix(beta)
     
-    for epoch in epochs:
+    for epoch in range(epochs):
         '''Train'''
         model.train()
         samples = 0
