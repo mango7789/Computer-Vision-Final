@@ -7,13 +7,13 @@ from torch.utils.data import DataLoader
 from transformers import ViTForImageClassification
 
 
-def get_cifar_dataloader(root: str='../data/', batch_size: int=64, num_workers: int=2) -> tuple[DataLoader]:
+def get_cifar_dataloader(root: str='./data/', batch_size: int=64, num_workers: int=2) -> tuple[DataLoader]:
     """
     Get the train and test Dataloader of the CIFAR-100 dataset. If the dataset doesn't exist in 
     the root directory, it will be downloaded into the `root` directory automatically.
     
     Args:
-    - root: The root path of the dataset, default is '../data/'
+    - root: The root path of the dataset, default is './data/'
     - batch_size: The size of one min-batch of the dataloader, default is 64.
     - num_workers: How many subprocesses to use for data loading. 0 means that the data 
         will be loaded in the main process, default is 2.
