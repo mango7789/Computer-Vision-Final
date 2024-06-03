@@ -136,10 +136,10 @@ class CutMix:
         cy = torch.randint(0, H, (1,)).item()
 
         # calculate the coordinates of the bbox
-        bbx1 = torch.clamp(cx - cut_w // 2, 0, W)
-        bby1 = torch.clamp(cy - cut_h // 2, 0, H)
-        bbx2 = torch.clamp(cx + cut_w // 2, 0, W)
-        bby2 = torch.clamp(cy + cut_h // 2, 0, H)
+        bbx1 = torch.clamp(torch.tensor(cx) - cut_w // 2, 0, W)
+        bby1 = torch.clamp(torch.tensor(cy) - cut_h // 2, 0, H)
+        bbx2 = torch.clamp(torch.tensor(cx) + cut_w // 2, 0, W)
+        bby2 = torch.clamp(torch.tensor(cy) + cut_h // 2, 0, H)
 
         return bbx1, bby1, bbx2, bby2
 

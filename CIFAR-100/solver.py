@@ -162,8 +162,9 @@ def train_with_params(
     best_acc = 0.
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     cutmix = CutMix(beta)
+    model = model.to(device)
     
-    for epoch in epochs:
+    for epoch in tqdm(epochs):
         '''Train'''
         model.train()
         samples = 0
