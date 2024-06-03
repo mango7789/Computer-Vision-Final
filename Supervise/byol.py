@@ -29,7 +29,11 @@ class PredictionHead(nn.Module):
         return self.layers(x)
 
 class BYOL(nn.Module):
-    def __init__(self, base_encoder :nn.Module, projection_dim :int=256, prediction_dim=4096):
+    """
+    Bootstrap Your Own Latent, often abbrred as BYOL. It relies on two neural networks, referred to 
+    as online and target networks, that interact and learn from each other.
+    """
+    def __init__(self, base_encoder :nn.Module, projection_dim :int, prediction_dim):
         super(BYOL, self).__init__()
         
         self.online_encoder = nn.Sequential(
@@ -69,5 +73,13 @@ class BYOL(nn.Module):
     
     @staticmethod
     def loss(pred1 :torch.Tensor, pred2 :torch.Tensor, target1 :torch.Tensor, target2 :torch.Tensor):
+        """
+        Compute the loss between the predicted tensor and target tensor. Loss is summed over two 
+        different views using `MSELoss`.
+        ```python
+        # NOTE: This is an abstract method, so it should be called with a reference to the class itself.
+        >>> BYOL.loss(pred1, pred2, target1, target2)
+        ```
+        """
         loss = nn.MSELoss()
         return loss(pred1, target1) + loss(pred2, target2)

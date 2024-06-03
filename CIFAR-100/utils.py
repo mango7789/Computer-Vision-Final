@@ -1,13 +1,15 @@
 import os
 import random
+from typing import List, Tuple
+
 import torch
 import torchvision
 import torch.nn as nn
+from torch.utils.data import DataLoader
+
 from torchvision import transforms
 import torchvision.models as models
-from torch.utils.data import DataLoader
 from transformers import ViTForImageClassification
-from typing import List, Tuple
 
 
 def seed_everything(seed: int=None):

@@ -1,30 +1,37 @@
 import os
+import logging 
+from tqdm import tqdm
+from typing import Tuple
+
 import torch
 import torch.nn as nn
 import torchvision.models as models
+from torch.utils.data import DataLoader
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+
 from byol import BYOL
 from utils import seed_everything, get_places365_dataloader
 
-import logging 
-from tqdm import tqdm
-import warnings
-warnings.filterwarnings('ignore')
 
 def train_byol(
         epochs: int=10,
         lr :float=0.003,
-        proj_dim :int=512,
-        pred_dim :int=2048,
+        proj_dim :int=1000,
+        pred_dim :int=1000,
+        save :bool=False,
         **kwargs
-    ):
+    ) -> BYOL:
     """
     Train BYOL on the Places-365 dataset with ResNet-18 as the base encoder.
     
     Args:
     - epochs: The number of training epochs, default is 10.
     - lr: The learning rate of the optimizer, default is 0.003.
-    - proj_dim: The dimension of the projection space, default is 512.
-    - pred_dim: The dimension of the prediction space, default is 2048.
+    - proj_dim: The dimension of the projection space, default is 1000.
+    - pred_dim: The dimension of the prediction space, default is 1000.
+    - save: Boolean, whether the model should be saved.
     - kwargs: Contain `seed`, `data_root`, `batch_size`, `num_workers`, 
             `lr_configs` and `update_rate`.
     """
@@ -51,7 +58,7 @@ def train_byol(
     seed_everything(seed)
     
     # get the dataloader
-    train_loader, _ = get_places365_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
+    train_loader = get_places365_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
     
     # get the device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -72,7 +79,8 @@ def train_byol(
     
     logging.basicConfig(
         level=logging.DEBUG,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
         handlers=[
             logging.FileHandler(log_file_path),  
             logging.StreamHandler()             
@@ -89,6 +97,7 @@ def train_byol(
     for epoch in tqdm(epochs):
         total_loss = 0
         for images, _ in train_loader:
+            # inspect the image from two different views
             img1, img2 = images[0].to(device), images[1].to(device)
 
             optimizer.zero_grad()
@@ -101,11 +110,60 @@ def train_byol(
 
             total_loss += loss.item()
         
-        avg_loss = total_loss / len(train_loader)
+        training_loss = total_loss / len(train_loader)
         
-        logger.info("[Epoch {:>2} / {:>2}], Training loss is {:>8.6f}".format(epoch + 1, epochs, avg_loss))
+        logger.info("[Epoch {:>2} / {:>2}], Training loss is {:>8.6f}".format(epoch + 1, epochs, training_loss))
         
         # update target network
         with torch.no_grad():
             for param_online, param_target in zip(model.online_encoder.parameters(), model.target_encoder.parameters()):
                 param_target.data = param_target.data * update_rate + param_online.data * (1 - update_rate)
+    
+    # save the trained byol model
+    if save:
+        save_path = 'byol.pth'
+        if not os.path.exists('./model'):
+            os.mkdir('./model')
+            torch.save(model.state_dict(), os.path.join('./model', save_path))
+    
+    return model
+
+
+def extract_features(model: nn.Module, data_loader: DataLoader) -> Tuple[torch.Tensor]:
+    """
+    Extract features of the dataset after passing the `online_encoder`.
+    """
+    model.eval()
+    features, labels = [], []
+    with torch.no_grad():
+        for images, label in data_loader:
+            images = images.cuda()
+            
+            feature = model.online_encoder[0](images).view(images.size(0), -1)
+            features.append(feature.cpu())
+            
+            labels.append(label)
+            
+    return torch.cat(features, dim=0), torch.cat(labels, dim=0)
+
+
+def train_linear_classifier(
+        train_features :torch.Tensor, 
+        train_labels :torch.Tensor, 
+        test_features :torch.Tensor,
+        test_labels :torch.Tensor
+    ) -> float:
+    """
+    Train a linear classifier on the training features and labels, then test the classifier on 
+    the testing features and labels. Return the accuracy of the classifier. The linear classifier 
+    is choosen as `LogisticRegression`.
+    """
+    # fit on the training set
+    linear_classifier = LogisticRegression(max_iter=1000, solver='lbfgs', multi_class='multinomial')
+    linear_classifier.fit(train_features, train_labels)
+
+    # evaluate on the testing set
+    test_preds = linear_classifier.predict(test_features)
+    accuracy = accuracy_score(test_labels, test_preds)
+    
+    return accuracy

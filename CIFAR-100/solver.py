@@ -1,16 +1,13 @@
 import os
+import logging
+from tqdm import tqdm
+from typing import Literal, List, Tuple
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from typing import Literal, List, Tuple
+
 from utils import seed_everything, get_cifar_dataloader, get_cnn_model, get_vit_model, CutMix
-# ignore the warnings
-import warnings
-warnings.filterwarnings('ignore')
-# logger
-import logging
-# progress bar
-from tqdm import tqdm
 
 def calculate_topk_correct(output: torch.Tensor, target: torch.Tensor, topk=(1, 5)) -> List[int]:
     """
@@ -68,6 +65,8 @@ def train_with_params(
     best_accuracy = train_with_params(nn_name='CNN', epochs=20, criterion=nn.CrossEntropyLoss())
     # NOTE: if you want to train on Kaggle, the data root should be set correctly
     best_accuracy = train_with_params(nn_name='CNN', data_root='/kaggle/input/cifar-100')
+    # NOTE: if you want to disable the `CutMix`, just need to set `beta = 0`
+    best_accuracy = train_with_params(nn_name='ViT', beta=0)
     ```
     """
     
@@ -143,7 +142,7 @@ def train_with_params(
     log_directory = os.path.join(output_dir, nn_name)
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
-    log_file_path = os.path.join(log_directory, '{}-{}-{}-{}-{}.log'.format(epochs, ft_lr, fc_lr, gamma, step_size))
+    log_file_path = os.path.join(log_directory, '{}->{}->{}->{}.log'.format(epochs, ft_lr, fc_lr, batch_size))
     
     logging.basicConfig(
         level=logging.DEBUG,
