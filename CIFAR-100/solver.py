@@ -226,7 +226,7 @@ def train_with_params(
         accuracy_top5 = correct_top5 / samples
         
         logger.info("[Epoch {:>2} / {:>2}, Model {}], Testing loss is {:>8.6f}, Top-5 accuracy is {:>8.6f}, Top-1 accuracy is {:>8.6f}".format(
-            epoch + 1, nn_name, epochs, test_loss, accuracy_top5, accuracy_top1
+            epoch + 1, epochs, nn_name, test_loss, accuracy_top5, accuracy_top1
         ))
         
         # update the best accuracy and save the model if it improves
