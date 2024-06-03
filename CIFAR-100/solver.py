@@ -9,7 +9,8 @@ import warnings
 warnings.filterwarnings('ignore')
 # logger
 import logging
-
+# progress bar
+import tqdm
 
 def calculate_topk_correct(output: torch.Tensor, target: torch.Tensor, topk=(1, 5)) -> List[int]:
     """
@@ -56,7 +57,8 @@ def train_with_params(
     - fc_lr: Fully-connected learning rate, the learning rate of the last fc layer.
     - criterion: The loss function of the neural network.
     - save: Boolean, whether the model should be saved.
-    - **kwargs: include `seed`, `batch_size`, `momentum`, `gamma`, `step_size` and other hyper-parameters.
+    - **kwargs: include `seed`, `data_root`, `output_dir`, `batch_size`, 
+                `momentum`, `gamma`, `step_size`, `weight_decay` and `beta`.
     
     Return:
     - best_acc: The best testing accuracy during the training process.
@@ -64,6 +66,8 @@ def train_with_params(
     Example:
     ```python
     best_accuracy = train_with_params(nn_name='CNN', epochs=20, criterion=nn.CrossEntropyLoss())
+    # NOTE: if you want to train on Kaggle, the data root should be set correctly
+    best_accuracy = train_with_params(nn_name='CNN', data_root='/kaggle/input/cifar-100')
     ```
     """
     
@@ -75,9 +79,13 @@ def train_with_params(
     seed = kwargs.pop('seed', 603)
     seed_everything(seed)
     
+    # get data_root and output_dir
+    data_root = kwargs.pop('data_root', './data/')
+    output_dir = kwargs.pop('output_dir', 'logs')
+    
     # get the training and testing dataloader
     batch_size = kwargs.pop('batch_size', 64)
-    train_loader, test_loader = get_cifar_dataloader(batch_size=batch_size)
+    train_loader, test_loader = get_cifar_dataloader(root=data_root, batch_size=batch_size)
     
     # # get the loss criterion
     # criterion = nn.CrossEntropyLoss()
@@ -88,6 +96,11 @@ def train_with_params(
     step_size = kwargs.pop('step_size', 10)
     weight_decay = kwargs.pop('weight_decay', 1e-4)
     beta = kwargs.pop('beta', 1.0)
+    
+    # throw an error if there are extra keyword arguments
+    if len(kwargs) > 0:
+        extra = ", ".join('"%s"' % k for k in list(kwargs.keys()))
+        raise ValueError("Unrecognized arguments %s" % extra)
     
     # get the model and corresponding optimizer
     nn_name = nn_name.lower()
@@ -127,7 +140,7 @@ def train_with_params(
                 param_group['lr'] *= gamma
                 
     # set the configuration for the logger
-    log_directory = os.path.join('logs', nn_name)
+    log_directory = os.path.join(output_dir, nn_name)
     if not os.path.exists(log_directory):
         os.mkdir(log_directory)
     log_file_path = os.path.join(log_directory, '{}-{}-{}-{}-{}.log'.format(epochs, ft_lr, fc_lr, gamma, step_size))
@@ -223,3 +236,126 @@ def train_with_params(
                 torch.save(model.state_dict(), os.path.join('model', '{}-CIFAR100.pth'.format(nn_name)))
         
     return best_acc
+
+
+def test_with_model(data_root: str='./data/', path: str='./model/CNN-CIFAR100.pth'):
+    """
+    Test the trained model on the CIFAR-100 dataset.
+    
+    Args:
+    - data_root: The stored directory of the dataset.
+    - path: Path to the .pth file. 
+    """
+    
+    # get the dataset, model and loss criterion
+    train_loader, test_loader = get_cifar_dataloader(root=data_root)
+    nn_name = path.split('/')[2][:3]
+    
+    match nn_name:
+        case 'CNN':
+            model = get_cnn_model()
+        case 'ViT':
+            model = get_vit_model()
+        case _:
+            raise ValueError('Invalid path name!')
+    
+    # labels of CIFAR-100
+    cifar100_classes = [
+        "beaver", "dolphin", "otter", "seal", "whale",
+        "aquarium fish", "flatfish", "ray", "shark", "trout",
+        "orchids", "poppies", "roses", "sunflowers", "tulips",
+        "bottles", "bowls", "cans", "cups", "plates",
+        "apples", "mushrooms", "oranges", "pears", "sweet peppers",
+        "clock", "computer keyboard", "lamp", "telephone", "television",
+        "bed", "chair", "couch", "table", "wardrobe",
+        "bee", "beetle", "butterfly", "caterpillar", "cockroach",
+        "bear", "leopard", "lion", "tiger", "wolf",
+        "bridge", "castle", "house", "road", "skyscraper",
+        "cloud", "forest", "mountain", "plain", "sea",
+        "camel", "cattle", "chimpanzee", "elephant", "kangaroo",
+        "fox", "porcupine", "possum", "raccoon", "skunk",
+        "crab", "lobster", "snail", "spider", "worm",
+        "baby", "boy", "girl", "man", "woman",
+        "crocodile", "dinosaur", "lizard", "snake", "turtle",
+        "hamster", "mouse", "rabbit", "shrew", "squirrel",
+        "maple", "oak", "palm", "pine", "willow",
+        "bicycle", "bus", "motorcycle", "pickup truck", "train",
+        "lawn-mower", "rocket", "streetcar", "tank", "tractor"
+    ]
+
+    
+    # move the model to CUDA (GPU)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+    
+    # load the trained model
+    trained_state_dict = torch.load(path, map_location=device)
+    model.load_state_dict(trained_state_dict)
+    
+    def dataset_accuracy(model, data_loader, data_type: Literal['train', 'test']):
+        """
+        Compute the accuracy based on the given model and dataset.
+        
+        Args:
+        - model: The CNN or ViT model on the CIFAR-100 dataset.
+        - data_loader: The train/test dataloader.
+        - data_type: The type of the accuracy, should be in ['train', 'test'].
+        """
+        model.eval()
+        class_correct_top1 = {}
+        class_correct_top5 = {}
+        class_samples = {}
+
+        total_correct_top1 = 0
+        total_correct_top5 = 0
+        total_samples = 0
+
+        with torch.no_grad():
+            for inputs, labels in tqdm(data_loader):
+                
+                inputs, labels = inputs.to(device), labels.to(device)
+                if nn_name == 'ViT':
+                    outputs = model(pixel_values=inputs).logits
+                elif nn_name == 'CNN':
+                    outputs = model(inputs)
+                
+                _, pred_top1 = outputs.topk(1, 1, True, True)
+                _, pred_top5 = outputs.topk(5, 1, True, True)
+                pred_top1 = pred_top1.t()
+                pred_top5 = pred_top5.t()
+                
+                correct_top1 = pred_top1.eq(labels.view(1, -1).expand_as(pred_top1))
+                correct_top5 = pred_top5.eq(labels.view(1, -1).expand_as(pred_top5))
+                
+                total_correct_top1 += correct_top1.sum().item()
+                total_correct_top5 += correct_top5.sum().item()
+                total_samples += labels.size(0)
+                
+                # iterate each label
+                for label in labels:
+                    label = label.item()
+                    if label not in class_correct_top1:
+                        class_correct_top1[label] = 0
+                        class_correct_top5[label] = 0
+                        class_samples[label] = 0
+                    class_correct_top1[label] += correct_top1[0, labels == label].sum().item()
+                    class_correct_top5[label] += correct_top5[:, labels == label].sum().item()
+                    class_samples[label] += (labels == label).sum().item()
+        
+        for label in sorted(class_samples.keys()):
+            accuracy_top1 = class_correct_top1[label] / class_samples[label]
+            accuracy_top5 = class_correct_top5[label] / class_samples[label]
+            print("For class {:^30} on the CIFAR-100 dataset, Top-1 accuracy is {:>8.6f}, Top-5 accuracy is {:>8.6f}".format(
+                cifar100_classes[label], accuracy_top1, accuracy_top5
+            ))
+
+        total_accuracy_top1 = total_correct_top1 / total_samples
+        total_accuracy_top5 = total_correct_top5 / total_samples
+
+        print("=" * 120)
+        print("For the best model on the CIFAR-100 dataset, Total Top-1 accuracy is {:>8.6f}, Total Top-5 accuracy is {:>8.6f}".format(
+            total_accuracy_top1, total_accuracy_top5
+        ))
+
+    # dataset_accuracy(model, train_loader, 'train')
+    dataset_accuracy(model, test_loader, 'test')
