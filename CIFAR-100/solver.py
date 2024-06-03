@@ -148,7 +148,8 @@ def train_with_params(
     logging.basicConfig(
         level=logging.DEBUG,
         force=True,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
         handlers=[
             logging.FileHandler(log_file_path),  
             logging.StreamHandler()             
@@ -163,7 +164,7 @@ def train_with_params(
     best_acc = 0.
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     cutmix = CutMix(beta)
-    model = model.to(device)
+    model.to(device)
     
     for epoch in tqdm(epochs):
         '''Train'''
@@ -195,7 +196,7 @@ def train_with_params(
         
         # log the training loss
         train_loss = running_loss / samples
-        logger.info("[Epoch {:>2} / {:>2}, Model {}], Training loss is {:>8.6f}".format(epoch + 1, nn_name, epochs, train_loss))
+        logger.info("[Epoch {:>2} / {:>2}, Model {}], Training loss is {:>8.6f}".format(epoch + 1, epochs, nn_name, train_loss))
 
         '''Test'''
         model.eval()

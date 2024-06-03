@@ -6,7 +6,7 @@ import torch.nn as nn
 from torchvision import transforms
 import torchvision.models as models
 from torch.utils.data import DataLoader
-from transformers import ViTForImageClassification, ViTConfig
+from transformers import ViTForImageClassification
 from typing import List, Tuple
 
 
@@ -123,7 +123,8 @@ class CutMix:
 
     def _rand_bbox(self, size: torch.Tensor, lam: float) -> Tuple:
         """
-        Generate a random bounding box for the images to apply CutMix.
+        Generate a random bounding box for the images to apply CutMix, return the 
+        (x, y) coordinates of the bounding points.
         """
         W = size[2]
         H = size[3]
