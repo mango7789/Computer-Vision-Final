@@ -2,10 +2,12 @@ import os
 import torchvision
 import torch.nn as nn
 from torchvision import transforms
+import torchvision.models as models
 from torch.utils.data import DataLoader
+from transformers import ViTForImageClassification
 
 
-def fetch_cifar_dataloader(root: str='../data/', batch_size: int=64, num_workers: int=2) -> tuple[DataLoader]:
+def get_cifar_dataloader(root: str='../data/', batch_size: int=64, num_workers: int=2) -> tuple[DataLoader]:
     """
     Get the train and test Dataloader of the CIFAR-100 dataset. If the dataset doesn't exist in 
     the root directory, it will be downloaded into the `root` directory automatically.
@@ -52,6 +54,28 @@ def fetch_cifar_dataloader(root: str='../data/', batch_size: int=64, num_workers
     return train_loader, test_loader
 
 
+def get_cnn_model() -> models.resnet50:
+    """
+    Return the pretrained Resnet-50 model on CIFAR100 dataset.
+    """
+    model_cnn = models.resnet50(weights='ResNet50_Weights.IMAGENET1K_V1')
+    # modify the output layer
+    num_features = model_cnn.fc.in_features
+    model_cnn.fc = nn.Linear(num_features, 100)
+    return model_cnn
+
+
+def get_vit_model(path: str='WinKawaks/vit-small-patch16-224') -> ViTForImageClassification:
+    """
+    Return the pretrained `path` ViT model on CIFAR100 dataset.
+    
+    Args:
+    - path: pretrained_model_name_or_path (str or os.PathLike, *optional*)
+    """
+    model_vit = ViTForImageClassification.from_pretrained(path, num_labels=100, ignore_mismatched_sizes=True)
+    return model_vit
+
+
 def count_model_parameters(model: nn.Module) -> int:
     """
     Return the number of parameters in the given `model`, the model should be instantiated.
@@ -62,10 +86,7 @@ def count_model_parameters(model: nn.Module) -> int:
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 
-if __name__ == '__main__':
-
-    from model.cnn import SimpleCNN
-    from model.transformer import SimpleTransformer
-
-    print(count_model_parameters(SimpleCNN()))
-    print(count_model_parameters(SimpleTransformer()))
+if __name__ == '__main__':    
+    # print(count_model_parameters(get_cnn_model()))
+    # print(count_model_parameters(get_vit_model()))
+    print(get_vit_model().classifier.parameters())
