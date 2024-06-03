@@ -45,7 +45,7 @@ def train_with_params(
         criterion: nn.Module=nn.CrossEntropyLoss(),
         save: bool=False,
         **kwargs
-    ):
+    ) -> float:
     """
     Fine-Tuning the ResNet-18 and ViT(small) pretrained model on the CIFAR100 dataset with given paramters.
     
@@ -57,6 +57,14 @@ def train_with_params(
     - criterion: The loss function of the neural network.
     - save: Boolean, whether the model should be saved.
     - **kwargs: include `seed`, `batch_size`, `momentum`, `gamma`, `step_size` and other hyper-parameters.
+    
+    Return:
+    - best_acc: The best testing accuracy during the training process.
+    
+    Example:
+    ```python
+    best_accuracy = train_with_params(nn_name='CNN', epochs=20, criterion=nn.CrossEntropyLoss())
+    ```
     """
     
     ############################################################################
@@ -213,3 +221,5 @@ def train_with_params(
                 if not os.path.exists('./model'):
                     os.mkdir('./model')
                 torch.save(model.state_dict(), os.path.join('model', '{}-CIFAR100.pth'.format(nn_name)))
+        
+    return best_acc
