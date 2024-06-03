@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 from byol import BYOL
-from utils import get_places365_dataloader
+from utils import seed_everything, get_places365_dataloader
 
 import logging 
 from tqdm import tqdm
@@ -25,7 +25,8 @@ def train_byol(
     - lr: The learning rate of the optimizer, default is 0.003.
     - proj_dim: The dimension of the projection space, default is 512.
     - pred_dim: The dimension of the prediction space, default is 2048.
-    - kwargs: Contain `data_root`, `batch_size`, `num_workers`, `lr_configs` and `update_rate`.
+    - kwargs: Contain `seed`, `data_root`, `batch_size`, `num_workers`, 
+            `lr_configs` and `update_rate`.
     """
     
     ############################################################################
@@ -33,6 +34,7 @@ def train_byol(
     ############################################################################    
 
     # unpack other hyper-parameters
+    seed = kwargs.pop('seed', 603)
     data_root = kwargs.pop('data_root', './data/')
     output_dir = kwargs.pop('output_dir', 'logs')
     batch_size = kwargs.pop('batch_size', 64)
@@ -45,13 +47,16 @@ def train_byol(
         extra = ", ".join('"%s"' % k for k in list(kwargs.keys()))
         raise ValueError("Unrecognized arguments %s" % extra)
 
+    # set the random seed to make the results reproducible
+    seed_everything(seed)
+    
     # get the dataloader
     train_loader, _ = get_places365_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
     
     # get the device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
-    # define the model
+    # define the model with ResNet-18 as the basic encoder
     base_encoder = models.resnet18(pretrained=False)
     base_encoder.fc = nn.Identity()
     model = BYOL(base_encoder, projection_dim=proj_dim, prediction_dim=pred_dim).to(device)
