@@ -6,7 +6,7 @@ import torch.nn as nn
 from torchvision import transforms
 import torchvision.models as models
 from torch.utils.data import DataLoader
-from transformers import ViTForImageClassification
+from transformers import ViTForImageClassification, ViTConfig
 
 
 def seed_everything(seed: int=None):
@@ -37,8 +37,7 @@ def get_cifar_dataloader(root: str='./data/', batch_size: int=64, num_workers: i
     
     # transform the training and testing dataset
     transform_train = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.RandomCrop(32, padding=4),
+        transforms.RandomCrop(size=32, padding=4),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Normalize(
@@ -48,7 +47,6 @@ def get_cifar_dataloader(root: str='./data/', batch_size: int=64, num_workers: i
     ])
 
     transform_test = transforms.Compose([
-        transforms.Resize((224, 224)),
         transforms.ToTensor(),
         transforms.Normalize(
             mean=(0.5071, 0.4867, 0.4408), 
@@ -73,12 +71,36 @@ def get_cnn_model() -> models.resnet50:
     """
     Return the pretrained Resnet-50 model on CIFAR100 dataset.
     """
-    model_cnn = models.resnet50(weights='ResNet50_Weights.IMAGENET1K_V1')
-    # modify the output layer
-    num_features = model_cnn.fc.in_features
-    model_cnn.fc = nn.Linear(num_features, 100)
-    return model_cnn
+    class ModifiedResNet50(nn.Module):
+        def __init__(self, num_classes :int=1000): 
+            super(ModifiedResNet50, self).__init__()
+            self.resnet50 = models.resnet50(pretrained=True)
+            
+            # modify the first convolutional layer to accept 32x32 input images
+            self.resnet50.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
+            self.resnet50.bn1 = nn.BatchNorm2d(64)
+            self.resnet50.relu = nn.ReLU(inplace=True)
+            self.resnet50.maxpool = nn.Identity()  # Remove the maxpool layer to avoid reducing the spatial dimensions too much
 
+            # adjust the number of input features for the fully connected layer
+            num_ftrs = self.resnet50.fc.in_features
+            self.resnet50.fc = nn.Linear(num_ftrs, num_classes)
+            
+        def forward(self, x: torch.Tensor) -> torch.Tensor:
+            x = self.resnet50.conv1(x)
+            x = self.resnet50.bn1(x)
+            x = self.resnet50.relu(x)
+            # skip the maxpool layer since it's replaced by nn.Identity()
+            x = self.resnet50.layer1(x)
+            x = self.resnet50.layer2(x)
+            x = self.resnet50.layer3(x)
+            x = self.resnet50.layer4(x)
+            x = self.resnet50.avgpool(x)
+            x = torch.flatten(x, 1)
+            x = self.resnet50.fc(x)
+            return x
+        
+    return ModifiedResNet50().resnet50
 
 def get_vit_model(path: str='WinKawaks/vit-small-patch16-224') -> ViTForImageClassification:
     """
@@ -87,7 +109,17 @@ def get_vit_model(path: str='WinKawaks/vit-small-patch16-224') -> ViTForImageCla
     Args:
     - path: pretrained_model_name_or_path (str or os.PathLike, *optional*)
     """
-    model_vit = ViTForImageClassification.from_pretrained(path, num_labels=100, ignore_mismatched_sizes=True)
+    config = ViTConfig.from_pretrained(path)
+    
+    # adjust the configuration for 32x32 input images and number of clases in CIFAR100
+    config.image_size = 32   
+    config.hidden_size = 384 
+    config.num_channels = 3   
+    config.num_classes = 100  
+    
+    # load the modified model
+    model_vit = ViTForImageClassification(config)  
+      
     return model_vit
 
 
@@ -104,4 +136,4 @@ def count_model_parameters(model: nn.Module) -> int:
 if __name__ == '__main__':    
     # print(count_model_parameters(get_cnn_model()))
     # print(count_model_parameters(get_vit_model()))
-    print(get_cnn_model())
+    print(get_vit_model())
