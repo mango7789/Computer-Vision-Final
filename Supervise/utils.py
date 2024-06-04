@@ -16,7 +16,7 @@ def seed_everything(seed: int=None):
     torch.cuda.manual_seed(seed)
     torch.backends.cudnn.deterministic = True
     
-
+# TODO: the dataset should be changed, Places365 is too large!!!
 def get_places365_dataloader(root: str='./data/', batch_size: int=64, num_workers: int=2) -> DataLoader:
     """
     Get the train Dataloader of the Places-365 dataset. If the dataset doesn't exist in 
@@ -36,12 +36,14 @@ def get_places365_dataloader(root: str='./data/', batch_size: int=64, num_worker
     train_transform = transforms.Compose([
         transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
+        transforms.ColorJitter(0.4, 0.4, 0.4, 0.1),
+        transforms.RandomGrayscale(0.2),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
     
     # if the dataset doesn't exist in local, download it automatically
-    download = (not os.path.exists(root)) or (os.listdir(root) == [])
+    download = (not os.path.exists(root)) or ('filelist_places365-standard' not in os.listdir(root))
     
     # get the training dataloader
     train_set = torchvision.datasets.Places365(root=root, split='train-standard', download=download, transform=train_transform)
@@ -77,7 +79,7 @@ def get_cifar_dataloader(root: str='./data/', batch_size: int=64, num_workers: i
     ])
     
     # if the dataset doesn't exist in local, download it automatically
-    download = (not os.path.exists(root)) or (os.listdir(root) == [])
+    download = (not os.path.exists(root)) or ('cifar-100-python' not in os.listdir(root))
     
     # get the training and testing dataloader
     train_set = torchvision.datasets.CIFAR100(root=root, train=True, download=download, transform=transform_train)

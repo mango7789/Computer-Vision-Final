@@ -174,7 +174,7 @@ def train_with_params(
         samples = 0
         running_loss = 0.
         
-        for inputs, labels in tqdm(train_loader):
+        for inputs, labels in train_loader:
             
             inputs, labels = inputs.to(device), labels.to(device)
             inputs, targets_a, targets_b, lam = cutmix(inputs, labels)
@@ -207,7 +207,7 @@ def train_with_params(
         correct_top1 = correct_top5 = 0
         
         with torch.no_grad():
-            for inputs, labels in tqdm(test_loader):
+            for inputs, labels in test_loader:
                 
                 inputs, labels = inputs.to(device), labels.to(device)
                 
