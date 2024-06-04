@@ -143,7 +143,7 @@ def train_with_params(
     log_file_path = os.path.join(log_directory, '{}--{}--{}--{}.log'.format(epochs, ft_lr, fc_lr, batch_size))
     
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.INFO,
         force=True,
         format='%(asctime)s - %(levelname)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S',
@@ -174,7 +174,7 @@ def train_with_params(
         samples = 0
         running_loss = 0.
         
-        for inputs, labels in train_loader:
+        for inputs, labels in tqdm(train_loader):
             
             inputs, labels = inputs.to(device), labels.to(device)
             inputs, targets_a, targets_b, lam = cutmix(inputs, labels)
@@ -207,7 +207,7 @@ def train_with_params(
         correct_top1 = correct_top5 = 0
         
         with torch.no_grad():
-            for inputs, labels in test_loader:
+            for inputs, labels in tqdm(test_loader):
                 
                 inputs, labels = inputs.to(device), labels.to(device)
                 

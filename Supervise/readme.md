@@ -1,3 +1,5 @@
+<h2 style="text-align: center;"> 任务1：对比监督学习和自监督学习在图像分类任务上的性能表现 </h2>
+
 
 ### Linear Classification Protocol (LCP) is a common evaluation method for self-supervised learning (SSL) algorithms. The general process involves the following steps:
 

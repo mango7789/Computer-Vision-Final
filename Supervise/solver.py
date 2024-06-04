@@ -20,6 +20,7 @@ def train_byol(
         lr :float=0.003,
         proj_dim :int=1000,
         pred_dim :int=1000,
+        update_rate: float=0.996,
         save :bool=False,
         **kwargs
     ) -> BYOL:
@@ -31,6 +32,7 @@ def train_byol(
     - lr: The learning rate of the optimizer, default is 0.003.
     - proj_dim: The dimension of the projection space, default is 1000.
     - pred_dim: The dimension of the prediction space, default is 1000.
+    - update_rate: The update rate of the target by moving average.
     - save: Boolean, whether the model should be saved.
     - kwargs: Contain `seed`, `data_root`, `batch_size`, `num_workers`, 
             `lr_configs` and `update_rate`.
@@ -47,7 +49,6 @@ def train_byol(
     batch_size = kwargs.pop('batch_size', 64)
     num_workers = kwargs.pop('num_workers', 2)
     lr_configs = kwargs.pop('lr_configs', {})
-    update_rate = kwargs.pop('update_rate', 0.996)
 
     # throw an error if there are extra keyword arguments
     if len(kwargs) > 0:
@@ -78,7 +79,7 @@ def train_byol(
     log_file_path = os.path.join(log_directory, '{}-{}-{}-{}.log'.format(epochs, lr, proj_dim, pred_dim))
     
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S',
         handlers=[
