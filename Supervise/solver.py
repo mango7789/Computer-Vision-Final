@@ -13,7 +13,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
 from byol import Encoder, BYOL
-from utils import seed_everything, get_places365_dataloader, get_cifar_dataloader
+from utils import seed_everything, get_places365_dataloader, get_cifar_dataloader, self_supervise_augumentation
 
 
 def train_byol(
@@ -37,7 +37,7 @@ def train_byol(
     - update_rate: The update rate of the target by moving average.
     - save: Boolean, whether the model should be saved.
     - kwargs: Contain `seed`, `data_root`, `batch_size`, `num_workers`, 
-            `lr_configs` and `update_rate`.
+            and `lr_configs`.
     """
     
     ############################################################################
@@ -90,18 +90,23 @@ def train_byol(
     
     logger = logging.getLogger(__name__)
     
+    # get data augmentation
+    augmentation = self_supervise_augumentation()
+    
     ############################################################################
     #                               training                                   #
     ############################################################################  
     
     model.train()
-    for epoch in tqdm(epochs):
+    for epoch in tqdm(range(epochs)):
         # TODO: The calculation of the loss.
         samples = 0
         running_loss = 0
         for images, _ in train_loader:
-            # inspect the image from two different views
-            img1, img2 = images[0].to(device), images[1].to(device)
+            # TODO: should we move `batch` or not?
+            # inspect the image from two different views            
+            img1 = torch.stack([augmentation(image) for image in images], dim=0).to(device)
+            img2 = torch.stack([augmentation(image) for image in images], dim=0).to(device)
 
             optimizer.zero_grad()
             

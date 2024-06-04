@@ -1,10 +1,13 @@
 import os
 import random
+
 import torch
 import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
+
 from typing import List, Tuple
+
 
 def seed_everything(seed: int=None):
     """
@@ -15,6 +18,7 @@ def seed_everything(seed: int=None):
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
     torch.backends.cudnn.deterministic = True
+    
     
 # TODO: the dataset should be changed, Places365 is too large!!!
 def get_places365_dataloader(root: str='./data/', batch_size: int=64, num_workers: int=2) -> DataLoader:
@@ -34,10 +38,6 @@ def get_places365_dataloader(root: str='./data/', batch_size: int=64, num_worker
     
     # define data augmentation and normalization for training dataset
     train_transform = transforms.Compose([
-        transforms.RandomResizedCrop(224),
-        transforms.RandomHorizontalFlip(),
-        transforms.ColorJitter(0.4, 0.4, 0.4, 0.1),
-        transforms.RandomGrayscale(0.2),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
@@ -50,6 +50,7 @@ def get_places365_dataloader(root: str='./data/', batch_size: int=64, num_worker
     train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers)
     
     return train_loader
+
 
 def get_cifar_dataloader(root: str='./data/', batch_size: int=64, num_workers: int=2) -> Tuple[DataLoader]:
     """
@@ -89,3 +90,19 @@ def get_cifar_dataloader(root: str='./data/', batch_size: int=64, num_workers: i
     test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False, num_workers=num_workers)
     
     return train_loader, test_loader
+
+
+def self_supervise_augumentation() -> transforms.Compose:
+    """
+    Return the transformation applied for data augmentation in the training process
+    of self-supervised learning.
+    """
+    augmentation = transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.1),
+        transforms.RandomGrayscale(p=0.2),
+        transforms.GaussianBlur(kernel_size=(23, 23)),
+        transforms.ToTensor()
+    ])
+    return augmentation
