@@ -40,7 +40,6 @@ def train_with_params(
         epochs: int=10, 
         ft_lr: float=0.0001, 
         fc_lr: float=0.001,
-        criterion: nn.Module=nn.CrossEntropyLoss(),
         save: bool=False,
         **kwargs
     ) -> float:
@@ -52,7 +51,6 @@ def train_with_params(
     - epochs: Number of training epochs, default is 10. 
     - ft_lr: Fine-tuning learning rate, the learning rate except the last fc layer.
     - fc_lr: Fully-connected learning rate, the learning rate of the last fc layer.
-    - criterion: The loss function of the neural network.
     - save: Boolean, whether the model should be saved.
     - **kwargs: include `seed`, `data_root`, `output_dir`, `batch_size`, 
                 `momentum`, `gamma`, `step_size`, `weight_decay` and `beta`.
@@ -86,14 +84,14 @@ def train_with_params(
     batch_size = kwargs.pop('batch_size', 64)
     train_loader, test_loader = get_cifar_dataloader(root=data_root, batch_size=batch_size)
     
-    # # get the loss criterion
-    # criterion = nn.CrossEntropyLoss()
+    # get the loss criterion
+    criterion = nn.CrossEntropyLoss()
     
     # pop other hyper-parameters from the kwargs dict
     momentum = kwargs.pop('momentum', 0.9)
     gamma = kwargs.pop('gamma', 0.1)
-    step_size = kwargs.pop('step_size', 10)
-    weight_decay = kwargs.pop('weight_decay', 1e-4)
+    step_size = kwargs.pop('step_size', 5)
+    weight_decay = kwargs.pop('weight_decay', 0.0001)
     beta = kwargs.pop('beta', 1.0)
     
     # throw an error if there are extra keyword arguments
@@ -142,7 +140,7 @@ def train_with_params(
     log_directory = os.path.join(output_dir, nn_name)
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
-    log_file_path = os.path.join(log_directory, '{}->{}->{}->{}.log'.format(epochs, ft_lr, fc_lr, batch_size))
+    log_file_path = os.path.join(log_directory, '{}--{}--{}--{}.log'.format(epochs, ft_lr, fc_lr, batch_size))
     
     logging.basicConfig(
         level=logging.DEBUG,
@@ -165,7 +163,12 @@ def train_with_params(
     cutmix = CutMix(beta)
     model.to(device)
     
-    for epoch in tqdm(epochs):
+    # NOTE: you can change the information of logger based on your specific hyper-params
+    logger.info("Train with configuration ==> ft_lr: {:>7.5f}, fc_lr: {:>7.5f}, batch_size: {:>3}".format(
+        ft_lr, fc_lr, batch_size
+    ))
+    
+    for epoch in tqdm(range(epochs)):
         '''Train'''
         model.train()
         samples = 0
