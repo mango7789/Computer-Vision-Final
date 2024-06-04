@@ -89,8 +89,8 @@ def train_with_params(
     
     # pop other hyper-parameters from the kwargs dict
     momentum = kwargs.pop('momentum', 0.9)
-    gamma = kwargs.pop('gamma', 0.1)
-    step_size = kwargs.pop('step_size', 5)
+    gamma = kwargs.pop('gamma', 0.5)
+    step_size = kwargs.pop('step_size', 3)
     weight_decay = kwargs.pop('weight_decay', 0.0001)
     beta = kwargs.pop('beta', 1.0)
     
