@@ -65,9 +65,11 @@ def train_byol(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
     # define the model with ResNet-18 as the basic encoder
-    model = BYOL(Encoder(), hidden_dim, output_dim, momentum=update_rate).to(device)
+    model = BYOL(Encoder, hidden_dim, output_dim, momentum=update_rate).to(device)
     
     # define optimizer
+    # NOTE: since we use adam as the optimizer, the learning rate will be adjusted dynamically, so 
+    #       no additional scheduler is applied here
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
 
     # set the configuration for the logger
@@ -290,7 +292,7 @@ class LinearClassifier(nn.Module):
 def train_linear_classifier(
         train_features :torch.Tensor, train_labels :torch.Tensor, 
         test_features :torch.Tensor, test_labels :torch.Tensor,
-        epochs: int=10, learning_rate: float=0.001, 
+        epochs: int=100, learning_rate: float=0.001, 
         type: str=Literal['self_supervise', 'supervise_with_pretrain', 'supervise_no_pretrain'],
         save: bool=False
     ) -> float:
@@ -311,7 +313,7 @@ def train_linear_classifier(
     # define criterion, optimizer and scheduler
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(classifier.parameters(), lr=learning_rate)
-    scheduler = MultiStepLR(optimizer, milestones=[5, 15], gamma=0.5)
+    scheduler = MultiStepLR(optimizer, milestones=[40, 80], gamma=0.1)
 
     # set the configuration for the logger
     log_directory = os.path.join('./log', 'linear_classifier')
