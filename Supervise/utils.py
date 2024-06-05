@@ -24,9 +24,13 @@ def seed_everything(seed: int=None):
     torch.backends.cudnn.deterministic = True
     
 
+# TODO: add a dataloader for CIFAR-10, since we need to find the impact from the 
+#       scale(size) of dataset.
+
+
 class TinyImageNetDataset(Dataset):
     """
-    A subclass of `Dataset` implemented in `torch.utils.data`, used specifically for the
+    A subclass of class `Dataset` implemented in `torch.utils.data`, used specifically for the
     Tiny-ImageNet-200 dataset.
     """
     def __init__(self, root_dir :str, transform :transforms.Compose):
@@ -142,9 +146,9 @@ def get_tinyimage_dataloader(root: str='./data/', batch_size: int=64, num_worker
     return train_loader
 
 
-def get_cifar_dataloader(root: str='./data/', batch_size: int=64, num_workers: int=2) -> Tuple[DataLoader]:
+def get_cifar_100_dataloader(root: str='./data/', batch_size: int=64, num_workers: int=2) -> Tuple[DataLoader]:
     """
-    Inherited from the `get_cifar_dataloader` from Task2, here just the transform is modified.
+    Inherited from the `utils.get_cifar_dataloader` function from Task2.
     """
     
     # transform the training and testing dataset
@@ -196,7 +200,3 @@ def self_supervise_augumentation() -> transforms.Compose:
         transforms.ToTensor()
     ])
     return augmentation
-
-
-if __name__ == "__main__":
-    get_tinyimage_dataloader()

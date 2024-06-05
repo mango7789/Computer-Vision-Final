@@ -1,7 +1,7 @@
 import os
 import logging 
 from tqdm import tqdm
-from typing import Tuple
+from typing import Tuple, Literal
 
 import torch
 import torch.nn as nn
@@ -9,16 +9,13 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import MultiStepLR
 
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
-
 from byol import Encoder, BYOL
-from utils import seed_everything, get_tinyimage_dataloader, get_cifar_dataloader, self_supervise_augumentation
+from utils import seed_everything, get_tinyimage_dataloader, get_cifar_100_dataloader, self_supervise_augumentation
 
 
 def train_byol(
         epochs: int=10,
-        lr :float=0.003,
+        lr :float=0.001,
         hidden_dim :int=4096,
         output_dim :int=256,
         update_rate: float=0.996,
@@ -26,7 +23,7 @@ def train_byol(
         **kwargs
     ) -> Encoder:
     """
-    Train BYOL on the Places-365 dataset with ResNet-18 as the base encoder, return
+    Train BYOL on the Tiny-ImageNet dataset with ResNet-18 as the base encoder, return
     the trained online encoder.
     
     Args:
@@ -144,11 +141,19 @@ def fetch_resnet18() -> Encoder:
 
 
 def train_resnet18(
-        epochs: int=10,
+        epochs: int=30,
         lr :float=0.001,
         save: bool=False,
         **kwargs
     ):
+    """
+    Train ResNet-18 from scratch on the CIFAR-100 dataset using supervised learning.
+    
+    Args:
+    - epochs: Number of training epochs, default is 30.
+    - lr: Learning rate, default is 0.001.
+    - save: Whether the model should be saved, default is False.
+    """
     ############################################################################
     #                            initialization                                #
     ############################################################################    
@@ -170,7 +175,7 @@ def train_resnet18(
     seed_everything(seed)
     
     # get the dataloader
-    train_loader = get_cifar_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
+    train_loader = get_cifar_100_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
     
     # get the device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -230,9 +235,6 @@ def train_resnet18(
         training_loss = running_loss / samples
         
         logger.info("[Epoch {:>2} / {:>2}], Training loss is {:>8.6f}".format(epoch + 1, epochs, training_loss))
-        
-        # update target network
-        model.update_target_network()
     
     # save the trained resnet18 model
     if save:
@@ -246,7 +248,9 @@ def train_resnet18(
 
 def extract_features(encoder: nn.Module, data_loader: DataLoader) -> Tuple[torch.Tensor, torch.Tensor]:
     """
-    Extract features of the dataset after passing the `online_encoder`.
+    Extract features of the dataset after passing the `online_encoder`/`encoder`/`resnet18`(without fc layer).
+    Then concatenates features and labels from different batches, enabling the downstream training or evaluation 
+    processes to operate on the entire dataset seamlessly.
     
     Examples:
     ```python
@@ -266,24 +270,113 @@ def extract_features(encoder: nn.Module, data_loader: DataLoader) -> Tuple[torch
             
             labels.append(label)
             
-    return torch.cat(features, dim=0), torch.cat(labels, dim=0)
+    return torch.cat(features, dim=0).to(device), torch.cat(labels, dim=0).to(device)
+
+
+class LinearClassifier(nn.Module):
+    """
+    Use a traditional MLP as the lienar classifier protocol.
+    """
+    def __init__(self, input_dim :int=512, num_classes :int=100):
+        super(LinearClassifier, self).__init__()
+        self.fc = nn.Linear(input_dim, num_classes)
+    
+    def forward(self, x :torch.Tensor) -> torch.Tensor:
+        return self.fc(x)
 
 
 def train_linear_classifier(
         train_features :torch.Tensor, train_labels :torch.Tensor, 
-        test_features :torch.Tensor, test_labels :torch.Tensor
+        test_features :torch.Tensor, test_labels :torch.Tensor,
+        epochs: int=10, learning_rate: float=0.001, 
+        type: str=Literal['self_supervise', 'supervise_with_pretrain', 'supervise_no_pretrain'],
+        save: bool=False
     ) -> float:
     """
     Train a linear classifier on the training features and labels, then test the classifier on 
-    the testing features and labels. Return the accuracy of the classifier. The linear classifier 
-    is choosen as `LogisticRegression`.
+    the testing features and labels.
     """
-    # fit on the training set
-    linear_classifier = LogisticRegression(max_iter=500, solver='lbfgs', multi_class='multinomial')
-    linear_classifier.fit(train_features, train_labels)
-
-    # evaluate on the testing set
-    test_preds = linear_classifier.predict(test_features)
-    accuracy = accuracy_score(test_labels, test_preds)
+    ############################################################################
+    #                            initialization                                #
+    ############################################################################ 
     
-    return accuracy
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # initialize the linear classifier
+    input_dim = train_features.shape[1]
+    classifier = LinearClassifier(input_dim).to(device)
+
+    # define criterion, optimizer and scheduler
+    criterion = nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(classifier.parameters(), lr=learning_rate)
+    scheduler = MultiStepLR(optimizer, milestones=[5, 15], gamma=0.5)
+
+    # set the configuration for the logger
+    log_directory = os.path.join('./log', 'linear_classifier')
+    os.makedirs(log_directory, exist_ok=True)
+    log_file_path = os.path.join(log_directory, '{}.log'.format(type))
+    
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        handlers=[
+            logging.FileHandler(log_file_path),  
+            logging.StreamHandler()             
+        ]
+    )
+    
+    logger = logging.getLogger(__name__)
+
+    ############################################################################
+    #                               train                                      #
+    ############################################################################ 
+    best_accuracy = 0.
+    
+    # convert labels to long tensor (required by CrossEntropyLoss)
+    train_labels = train_labels.long()
+    test_labels = test_labels.long()
+    
+    
+    for epoch in range(epochs):
+        
+        # train the classifier
+        classifier.train()
+        optimizer.zero_grad()
+        
+        outputs = classifier(train_features)
+        
+        loss = criterion(outputs, train_labels)
+        loss.backward()
+        
+        optimizer.step()
+        scheduler.step()
+        
+        logger.info("[Epoch {:>2} / {:>2}], Training loss is {:>8.6f}".format(epoch + 1, epochs, loss / train_features.size(0)))
+
+        # evaluate the classifier
+        classifier.eval()
+        with torch.no_grad():
+            outputs = classifier(test_features)
+            _, predicted = torch.max(outputs, 1)
+            
+            # compute validation loss
+            criterion_ = nn.CrossEntropyLoss()
+            validation_loss = criterion_(outputs, test_labels).item()
+            
+            # compute accuracy
+            accuracy = (predicted == test_labels).float().mean().item()
+            
+            logger.info("[Epoch {:>2} / {:>2}], Validation loss is {:>8.6f}, Validation accuracy is {:>8.6f}".format(
+                epoch + 1, epochs, accuracy, validation_loss 
+            ))
+            
+            # update the best accuracy and save the model if it improves
+            if accuracy > best_accuracy:
+                best_accuracy = accuracy
+                if save:
+                    if not os.path.exists('./model'):
+                        os.mkdir('./model')
+                    torch.save(classifier.state_dict(), os.path.join('model', '{}.pth'.format(type)))
+            
+    return best_accuracy
