@@ -13,7 +13,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
 from byol import Encoder, BYOL
-from utils import seed_everything, get_places365_dataloader, get_cifar_dataloader, self_supervise_augumentation
+from utils import seed_everything, get_tinyimage_dataloader, get_cifar_dataloader, self_supervise_augumentation
 
 
 def train_byol(
@@ -61,7 +61,7 @@ def train_byol(
     seed_everything(seed)
     
     # get the dataloader
-    train_loader = get_places365_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
+    train_loader = get_tinyimage_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
     
     # get the device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -73,7 +73,7 @@ def train_byol(
     optimizer = optim.Adam(model.parameters(), lr=lr, **lr_configs)
 
     # set the configuration for the logger
-    log_directory = os.path.join(output_dir, 'byol')
+    log_directory = os.path.join(output_dir, 'BYOL')
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
     log_file_path = os.path.join(log_directory, '{}-{}-{}-{}.log'.format(epochs, lr, hidden_dim, output_dim))
@@ -103,21 +103,21 @@ def train_byol(
         samples = 0
         running_loss = 0
         for images, _ in train_loader:
-            # TODO: should we move `batch` or not?
-            # inspect the image from two different views            
-            img1 = torch.stack([augmentation(image) for image in images], dim=0).to(device)
-            img2 = torch.stack([augmentation(image) for image in images], dim=0).to(device)
+            # inspect the image from two different views        
+            for img in images:
+                img1, img2 = augmentation(img).to(device), augmentation(img).to(device)    
 
-            optimizer.zero_grad()
-            
-            pred1, pred2, target1, target2 = model(img1, img2)
-            loss = BYOL.loss(pred1, pred2, target1, target2)
-            
-            loss.backward()
-            optimizer.step()
+                optimizer.zero_grad()
+                
+                pred1, pred2, target1, target2 = model(img1, img2)
+                loss = BYOL.loss(pred1, pred2, target1, target2)
+                
+                loss.backward()
+                optimizer.step()
+                
+                running_loss += loss.item()
 
-            samples += images.size(0)
-            running_loss += loss.item()
+            samples += images.size(0)   # add the batch size
         
         training_loss = running_loss / samples
         
@@ -186,7 +186,7 @@ def train_resnet18(
     scheduler = MultiStepLR(optimizer, milestones=[10, 20], gamma=0.1)
 
     # set the configuration for the logger
-    log_directory = os.path.join(output_dir, 'resnet18')
+    log_directory = os.path.join(output_dir, 'ResNet-18')
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
     log_file_path = os.path.join(log_directory, '{}-{}-{}.log'.format(epochs, lr, batch_size))
