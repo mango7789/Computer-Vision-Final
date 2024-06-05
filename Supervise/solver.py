@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import MultiStepLR
 
 from model import Encoder, BYOL
-from utils import seed_everything, get_tinyimage_dataloader, get_cifar_100_dataloader, self_supervise_augumentation
+from utils import seed_everything, get_tinyimage_dataloader, get_cifar_100_dataloader
 
 
 def train_byol(
@@ -90,9 +90,6 @@ def train_byol(
     
     logger = logging.getLogger(__name__)
     
-    # get data augmentation
-    augmentation = self_supervise_augumentation()
-    
     ############################################################################
     #                               training                                   #
     ############################################################################  
@@ -102,22 +99,22 @@ def train_byol(
         # TODO: The calculation of the loss.
         samples = 0
         running_loss = 0
-        for images, _ in train_loader:
-            # inspect the image from two different views        
-            for img in images:
-                img1, img2 = augmentation(img).to(device), augmentation(img).to(device)    
+        for (img1, img2, _) in train_loader:
+            
+            optimizer.zero_grad()
+            
+            # inspect the image from two different views   
+            img1, img2 = img1.to(device), img2.to(device)
+                 
+            pred1, pred2, target1, target2 = model(img1, img2)
+            loss = BYOL.loss(pred1, pred2, target1, target2)
+            
+            loss.backward()
+            optimizer.step()
+            
+            running_loss += loss.item()
 
-                optimizer.zero_grad()
-                
-                pred1, pred2, target1, target2 = model(img1, img2)
-                loss = BYOL.loss(pred1, pred2, target1, target2)
-                
-                loss.backward()
-                optimizer.step()
-                
-                running_loss += loss.item()
-
-            samples += images.size(0)   # add the batch size
+            samples += img1.size(0)   # add the batch size
         
         training_loss = running_loss / samples
         

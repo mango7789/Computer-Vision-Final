@@ -33,9 +33,10 @@ class TinyImageNetDataset(Dataset):
     A subclass of class `Dataset` implemented in `torch.utils.data`, used specifically for the
     Tiny-ImageNet-200 dataset.
     """
-    def __init__(self, root_dir :str, transform :transforms.Compose):
+    def __init__(self, root_dir :str, transform_one :transforms.Compose, transform_two :transforms.Compose):
         self.root_dir = root_dir
-        self.transform = transform
+        self.transform_1 = transform_one
+        self.transform_2 = transform_two
         self.data = []
         self.labels = []
         self._download_extract()
@@ -45,15 +46,20 @@ class TinyImageNetDataset(Dataset):
         """
         Download the dataset in local if it doesn't exist and unzip the dataset.
         """
-        data_dir = 'data/tiny-imagenet-200'
-        zip_file = 'data/tiny-imagenet-200.zip'
+        data_dir = os.path.join(self.root_dir, 'tiny-imagenet-200')
+        zip_file = os.path.join(self.root_dir, 'tiny-imagenet-200.zip')
         url = 'http://cs231n.stanford.edu/tiny-imagenet-200.zip'
 
         def download_url(url :str, output_path :str):
+            """
+            Download the Tiny-ImageNet dataset from the given url.
+            """
             response = urllib.request.urlopen(url)
             total = int(response.getheader('Content-Length').strip())
+            if not os.path.exists(self.root_dir):
+                os.mkdir(self.root_dir)
             with open(output_path, 'wb') as f, tqdm(
-                desc=output_path,
+                desc='Downloading',
                 total=total,
                 unit='B',
                 unit_scale=True,
@@ -64,12 +70,15 @@ class TinyImageNetDataset(Dataset):
                     bar.update(size)
 
         def extract_zip(file_path :str, extract_to :str):
+            """
+            Extract downloaded zip files into the `extract_to` directory.
+            """
             with zipfile.ZipFile(file_path, 'r') as zip_ref:
                 for member in tqdm(
                     iterable=zip_ref.infolist(),
                     total=len(zip_ref.infolist()),
                     desc='Extracting ',
-                    unit='file'
+                    unit='file(s)'
                 ):
                     zip_ref.extract(member, extract_to)
                     
@@ -113,12 +122,13 @@ class TinyImageNetDataset(Dataset):
         
         image = Image.open(img_path).convert('RGB')
         # transform the original image
-        image = self.transform(image)
+        image1 = self.transform_1(image)
+        image2 = self.transform_2(image)
         
-        return image, label    
+        return image1, image2, label    
 
     
-def get_tinyimage_dataloader(root: str='./data/', batch_size: int=64, num_workers: int=2) -> DataLoader:
+def get_tinyimage_dataloader(root: str='./data', batch_size: int=64, num_workers: int=2) -> DataLoader:
     """
     Get the train Dataloader of the Tiny-ImageNet dataset. If the dataset doesn't exist in local, it will
     be downloaded and extracted into the `root` directory automatically.
@@ -134,19 +144,34 @@ def get_tinyimage_dataloader(root: str='./data/', batch_size: int=64, num_worker
     """
     
     # define data augmentation and normalization for training dataset
-    train_transform = transforms.Compose([
+    transform_one = transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.1),
+        transforms.RandomGrayscale(p=0.2),
+        transforms.GaussianBlur(kernel_size=(23, 23)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
+    
+    transform_two = transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.1),
+        transforms.RandomGrayscale(p=0.2),
+        transforms.GaussianBlur(kernel_size=(23, 23)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
     
     # get the training dataloader
-    train_set = TinyImageNetDataset(root_dir=root, transform=train_transform)
+    train_set = TinyImageNetDataset(root_dir=root, transform_one=transform_one, transform_two=transform_two)
     train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers)
     
     return train_loader
 
 
-def get_cifar_100_dataloader(root: str='./data/', batch_size: int=64, num_workers: int=2) -> Tuple[DataLoader]:
+def get_cifar_100_dataloader(root: str='./data', batch_size: int=64, num_workers: int=2) -> Tuple[DataLoader]:
     """
     Inherited from the `utils.get_cifar_dataloader` function from Task2.
     """
@@ -186,17 +211,5 @@ def get_cifar_100_dataloader(root: str='./data/', batch_size: int=64, num_worker
     return train_loader, test_loader
 
 
-def self_supervise_augumentation() -> transforms.Compose:
-    """
-    Return the transformation applied for data augmentation in the training process
-    of self-supervised learning.
-    """
-    augmentation = transforms.Compose([
-        transforms.RandomResizedCrop(224),
-        transforms.RandomHorizontalFlip(),
-        transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.1),
-        transforms.RandomGrayscale(p=0.2),
-        transforms.GaussianBlur(kernel_size=(23, 23)),
-        transforms.ToTensor()
-    ])
-    return augmentation
+if __name__ == '__main__':
+    get_tinyimage_dataloader()
