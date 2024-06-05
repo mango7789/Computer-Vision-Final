@@ -36,7 +36,7 @@ def resnet(args):
         weight_decay=args.weight_decay
     )
 
-def main():
+def train():
     parser = argparse.ArgumentParser(description='Training models on the Tiny-ImageNet dataset.')
     subparsers = parser.add_subparsers(dest='model', required=True, help='Choose a training method(model)')
 
@@ -78,4 +78,4 @@ def main():
     args.func(args)
 
 if __name__ == "__main__":
-    main()
+    train()

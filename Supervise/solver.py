@@ -9,7 +9,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import MultiStepLR
 
-from byol import Encoder, BYOL
+from model import Encoder, BYOL
 from utils import seed_everything, get_tinyimage_dataloader, get_cifar_100_dataloader, self_supervise_augumentation
 
 
