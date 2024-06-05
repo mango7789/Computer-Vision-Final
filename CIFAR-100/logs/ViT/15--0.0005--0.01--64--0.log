@@ -1,0 +1,31 @@
+2024-06-05 01:51:23 - INFO - Train with configuration ==> ft_lr: 0.00050, fc_lr: 0.01000, batch_size:  64
+2024-06-05 01:59:39 - INFO - [Epoch  1 / 15, Model ViT], Training loss is 0.585766
+2024-06-05 02:00:14 - INFO - [Epoch  1 / 15, Model ViT], Testing loss is 0.382340, Top-5 accuracy is 0.986400, Top-1 accuracy is 0.883400
+2024-06-05 02:08:31 - INFO - [Epoch  2 / 15, Model ViT], Training loss is 0.295266
+2024-06-05 02:09:06 - INFO - [Epoch  2 / 15, Model ViT], Testing loss is 0.354584, Top-5 accuracy is 0.989200, Top-1 accuracy is 0.891400
+2024-06-05 02:17:23 - INFO - [Epoch  3 / 15, Model ViT], Training loss is 0.220056
+2024-06-05 02:17:58 - INFO - [Epoch  3 / 15, Model ViT], Testing loss is 0.366805, Top-5 accuracy is 0.988600, Top-1 accuracy is 0.894900
+2024-06-05 02:26:15 - INFO - [Epoch  4 / 15, Model ViT], Training loss is 0.174706
+2024-06-05 02:26:50 - INFO - [Epoch  4 / 15, Model ViT], Testing loss is 0.372027, Top-5 accuracy is 0.988600, Top-1 accuracy is 0.897400
+2024-06-05 02:35:07 - INFO - [Epoch  5 / 15, Model ViT], Training loss is 0.108285
+2024-06-05 02:35:41 - INFO - [Epoch  5 / 15, Model ViT], Testing loss is 0.349621, Top-5 accuracy is 0.989800, Top-1 accuracy is 0.906600
+2024-06-05 02:43:59 - INFO - [Epoch  6 / 15, Model ViT], Training loss is 0.086537
+2024-06-05 02:44:33 - INFO - [Epoch  6 / 15, Model ViT], Testing loss is 0.370256, Top-5 accuracy is 0.989700, Top-1 accuracy is 0.904400
+2024-06-05 02:52:50 - INFO - [Epoch  7 / 15, Model ViT], Training loss is 0.071125
+2024-06-05 02:53:25 - INFO - [Epoch  7 / 15, Model ViT], Testing loss is 0.376519, Top-5 accuracy is 0.989000, Top-1 accuracy is 0.903400
+2024-06-05 03:01:41 - INFO - [Epoch  8 / 15, Model ViT], Training loss is 0.051034
+2024-06-05 03:02:16 - INFO - [Epoch  8 / 15, Model ViT], Testing loss is 0.375685, Top-5 accuracy is 0.989600, Top-1 accuracy is 0.906400
+2024-06-05 03:10:33 - INFO - [Epoch  9 / 15, Model ViT], Training loss is 0.044057
+2024-06-05 03:11:08 - INFO - [Epoch  9 / 15, Model ViT], Testing loss is 0.379884, Top-5 accuracy is 0.989600, Top-1 accuracy is 0.903600
+2024-06-05 03:19:25 - INFO - [Epoch 10 / 15, Model ViT], Training loss is 0.040728
+2024-06-05 03:19:59 - INFO - [Epoch 10 / 15, Model ViT], Testing loss is 0.378451, Top-5 accuracy is 0.990300, Top-1 accuracy is 0.906700
+2024-06-05 03:28:16 - INFO - [Epoch 11 / 15, Model ViT], Training loss is 0.035166
+2024-06-05 03:28:51 - INFO - [Epoch 11 / 15, Model ViT], Testing loss is 0.381452, Top-5 accuracy is 0.990400, Top-1 accuracy is 0.907400
+2024-06-05 03:37:08 - INFO - [Epoch 12 / 15, Model ViT], Training loss is 0.033756
+2024-06-05 03:37:42 - INFO - [Epoch 12 / 15, Model ViT], Testing loss is 0.384152, Top-5 accuracy is 0.990100, Top-1 accuracy is 0.906300
+2024-06-05 03:45:59 - INFO - [Epoch 13 / 15, Model ViT], Training loss is 0.030702
+2024-06-05 03:46:34 - INFO - [Epoch 13 / 15, Model ViT], Testing loss is 0.382772, Top-5 accuracy is 0.989800, Top-1 accuracy is 0.907300
+2024-06-05 03:54:51 - INFO - [Epoch 14 / 15, Model ViT], Training loss is 0.029153
+2024-06-05 03:55:25 - INFO - [Epoch 14 / 15, Model ViT], Testing loss is 0.382103, Top-5 accuracy is 0.990200, Top-1 accuracy is 0.907400
+2024-06-05 04:03:42 - INFO - [Epoch 15 / 15, Model ViT], Training loss is 0.028933
+2024-06-05 04:04:16 - INFO - [Epoch 15 / 15, Model ViT], Testing loss is 0.383249, Top-5 accuracy is 0.990000, Top-1 accuracy is 0.906200

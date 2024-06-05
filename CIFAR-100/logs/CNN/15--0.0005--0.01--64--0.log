@@ -1,0 +1,31 @@
+2024-06-04 23:28:13 - INFO - Train with configuration ==> ft_lr: 0.00050, fc_lr: 0.01000, batch_size:  64
+2024-06-04 23:37:11 - INFO - [Epoch  1 / 15, Model CNN], Training loss is 1.788601
+2024-06-04 23:37:41 - INFO - [Epoch  1 / 15, Model CNN], Testing loss is 0.840937, Top-5 accuracy is 0.952800, Top-1 accuracy is 0.746000
+2024-06-04 23:46:44 - INFO - [Epoch  2 / 15, Model CNN], Training loss is 0.744277
+2024-06-04 23:47:14 - INFO - [Epoch  2 / 15, Model CNN], Testing loss is 0.663352, Top-5 accuracy is 0.967000, Top-1 accuracy is 0.798400
+2024-06-04 23:56:16 - INFO - [Epoch  3 / 15, Model CNN], Training loss is 0.587960
+2024-06-04 23:56:46 - INFO - [Epoch  3 / 15, Model CNN], Testing loss is 0.604150, Top-5 accuracy is 0.970800, Top-1 accuracy is 0.812900
+2024-06-05 00:05:49 - INFO - [Epoch  4 / 15, Model CNN], Training loss is 0.494488
+2024-06-05 00:06:19 - INFO - [Epoch  4 / 15, Model CNN], Testing loss is 0.574207, Top-5 accuracy is 0.976200, Top-1 accuracy is 0.823100
+2024-06-05 00:15:21 - INFO - [Epoch  5 / 15, Model CNN], Training loss is 0.408395
+2024-06-05 00:15:52 - INFO - [Epoch  5 / 15, Model CNN], Testing loss is 0.545999, Top-5 accuracy is 0.977200, Top-1 accuracy is 0.833300
+2024-06-05 00:24:54 - INFO - [Epoch  6 / 15, Model CNN], Training loss is 0.373296
+2024-06-05 00:25:24 - INFO - [Epoch  6 / 15, Model CNN], Testing loss is 0.544522, Top-5 accuracy is 0.977200, Top-1 accuracy is 0.834100
+2024-06-05 00:34:27 - INFO - [Epoch  7 / 15, Model CNN], Training loss is 0.347064
+2024-06-05 00:34:57 - INFO - [Epoch  7 / 15, Model CNN], Testing loss is 0.539780, Top-5 accuracy is 0.978200, Top-1 accuracy is 0.837700
+2024-06-05 00:44:00 - INFO - [Epoch  8 / 15, Model CNN], Training loss is 0.316101
+2024-06-05 00:44:31 - INFO - [Epoch  8 / 15, Model CNN], Testing loss is 0.530589, Top-5 accuracy is 0.978300, Top-1 accuracy is 0.838400
+2024-06-05 00:53:33 - INFO - [Epoch  9 / 15, Model CNN], Training loss is 0.302881
+2024-06-05 00:54:03 - INFO - [Epoch  9 / 15, Model CNN], Testing loss is 0.528680, Top-5 accuracy is 0.978700, Top-1 accuracy is 0.840500
+2024-06-05 01:03:05 - INFO - [Epoch 10 / 15, Model CNN], Training loss is 0.289863
+2024-06-05 01:03:35 - INFO - [Epoch 10 / 15, Model CNN], Testing loss is 0.529458, Top-5 accuracy is 0.980100, Top-1 accuracy is 0.839400
+2024-06-05 01:12:38 - INFO - [Epoch 11 / 15, Model CNN], Training loss is 0.281338
+2024-06-05 01:13:08 - INFO - [Epoch 11 / 15, Model CNN], Testing loss is 0.529777, Top-5 accuracy is 0.979200, Top-1 accuracy is 0.840800
+2024-06-05 01:22:11 - INFO - [Epoch 12 / 15, Model CNN], Training loss is 0.271336
+2024-06-05 01:22:41 - INFO - [Epoch 12 / 15, Model CNN], Testing loss is 0.527269, Top-5 accuracy is 0.979100, Top-1 accuracy is 0.841800
+2024-06-05 01:31:44 - INFO - [Epoch 13 / 15, Model CNN], Training loss is 0.269582
+2024-06-05 01:32:14 - INFO - [Epoch 13 / 15, Model CNN], Testing loss is 0.528016, Top-5 accuracy is 0.979900, Top-1 accuracy is 0.842100
+2024-06-05 01:41:17 - INFO - [Epoch 14 / 15, Model CNN], Training loss is 0.261456
+2024-06-05 01:41:48 - INFO - [Epoch 14 / 15, Model CNN], Testing loss is 0.527115, Top-5 accuracy is 0.980000, Top-1 accuracy is 0.841700
+2024-06-05 01:50:50 - INFO - [Epoch 15 / 15, Model CNN], Training loss is 0.258129
+2024-06-05 01:51:21 - INFO - [Epoch 15 / 15, Model CNN], Testing loss is 0.530317, Top-5 accuracy is 0.979800, Top-1 accuracy is 0.840700
