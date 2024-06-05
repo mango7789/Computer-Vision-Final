@@ -14,7 +14,7 @@ from utils import seed_everything, get_tinyimage_dataloader, get_cifar_100_datal
 
 
 def train_byol(
-        epochs: int=10,
+        epochs: int=30,
         lr :float=0.001,
         hidden_dim :int=4096,
         output_dim :int=256,
@@ -34,7 +34,7 @@ def train_byol(
     - update_rate: The update rate of the target by moving average.
     - save: Boolean, whether the model should be saved.
     - kwargs: Contain `seed`, `data_root`, `batch_size`, `num_workers`, 
-            and `lr_configs`.
+        `weight_decay` and `lr_configs`.
     """
     
     ############################################################################
@@ -47,6 +47,7 @@ def train_byol(
     output_dir = kwargs.pop('output_dir', 'logs')
     batch_size = kwargs.pop('batch_size', 64)
     num_workers = kwargs.pop('num_workers', 2)
+    weight_decay = kwargs.pop('weight_decay', 1e-4)
     lr_configs = kwargs.pop('lr_configs', {})
 
     # throw an error if there are extra keyword arguments
@@ -67,13 +68,13 @@ def train_byol(
     model = BYOL(Encoder(), hidden_dim, output_dim, momentum=update_rate).to(device)
     
     # define optimizer
-    optimizer = optim.Adam(model.parameters(), lr=lr, **lr_configs)
+    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
 
     # set the configuration for the logger
     log_directory = os.path.join(output_dir, 'BYOL')
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
-    log_file_path = os.path.join(log_directory, '{}-{}-{}-{}.log'.format(epochs, lr, hidden_dim, output_dim))
+    log_file_path = os.path.join(log_directory, '{}--{}--{}--{}.log'.format(epochs, lr, hidden_dim, output_dim))
     
     logging.basicConfig(
         level=logging.INFO,
@@ -164,6 +165,7 @@ def train_resnet18(
     output_dir = kwargs.pop('output_dir', 'logs')
     batch_size = kwargs.pop('batch_size', 64)
     num_workers = kwargs.pop('num_workers', 2)
+    weight_decay = kwargs.pop('weight_decay', 1e-4)
     lr_configs = kwargs.pop('lr_configs', {})
 
     # throw an error if there are extra keyword arguments
@@ -187,14 +189,14 @@ def train_resnet18(
     criterion = nn.CrossEntropyLoss()
     
     # define optimizer & scheduler
-    optimizer = optim.SGD(model.parameters(), lr=lr, **lr_configs)
+    optimizer = optim.SGD(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
     scheduler = MultiStepLR(optimizer, milestones=[10, 20], gamma=0.1)
 
     # set the configuration for the logger
     log_directory = os.path.join(output_dir, 'ResNet-18')
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
-    log_file_path = os.path.join(log_directory, '{}-{}-{}.log'.format(epochs, lr, batch_size))
+    log_file_path = os.path.join(log_directory, '{}--{}--{}.log'.format(epochs, lr, batch_size))
     
     logging.basicConfig(
         level=logging.INFO,

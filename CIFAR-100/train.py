@@ -5,7 +5,7 @@ from solver import train_with_params
 # get the default training configurations
 with open('config.yaml', 'r') as f:
     config = yaml.safe_load(f)
-TRAIN_CONFIG = config['io'] | config['train']
+TRAIN_CONFIG = config['stream'] | config['train']
 
 
 def train():
@@ -20,7 +20,7 @@ def train():
     parser.add_argument('--fc_lr'   , type=float, default=TRAIN_CONFIG.pop('fc_lr')     , help='The learning rate of the fully-connect linear layer.')
     parser.add_argument("--ft_lr"   , type=float, default=TRAIN_CONFIG.pop('ft_lr')     , help='The fine-tuning learning rate of the model except the last fc layer.')
     
-    parser.add_argument('--save'    , action='store_true', default=TRAIN_CONFIG.pop('save') , help='Whether the model should be saved.')
+    parser.add_argument('--save'    , action='store_true'                               , help='Whether the model should be saved.')
     parser.add_argument('--beta'    , type=float, default=TRAIN_CONFIG.pop('beta')      , help='The beta hyper-params used in CutMix.')
 
     args = parser.parse_args()
@@ -31,13 +31,10 @@ def train():
         ft_lr=args.ft_lr,
         fc_lr=args.fc_lr,
         save=args.save,
-        
         data_root=args.root,
         output_dir=args.output,
-        
         batch_size=args.batch,
         beta=args.beta,
-        
         **TRAIN_CONFIG
     )
     

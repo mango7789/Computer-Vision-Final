@@ -1,4 +1,4 @@
-io:
+stream:
   data_root: './data'
   output_dir: 'logs'
 
