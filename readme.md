@@ -1,4 +1,12 @@
-<h2 style="text-align: center;"> 计算机视觉期末作业 </h2>
+<h2 align="center"> 计算机视觉期末作业 </h2>
+
+> [!WARNING]
+> 开发环境：Windows 11, Python 3.11.6   
+> 训练环境：Ubuntu 9.4.0, Python 3.11.6
+
+> [!NOTE]
+> 任务要求可点击展开，显示“基本要求”和“提交要求”   
+> 可点击对应的**代码地址**跳转到相应的文件目录，每个目录下均有对应的`readme`文件 
 
 ### 任务1：对比监督学习和自监督学习在图像分类任务上的性能表现
 
@@ -19,6 +27,8 @@
 #### 代码地址
 - https://github.com/mango7789/Computer-Vision-Final/tree/main/Supervise
 
+---
+
 ### 任务2：在CIFAR-100数据集上比较基于Transformer和CNN的图像分类模型
 
 <details>
@@ -38,6 +48,8 @@
 
 #### 代码地址
 - https://github.com/mango7789/Computer-Vision-Final/tree/main/CIFAR-100
+
+---
 
 ### 任务3：基于NeRF的物体重建和新视图合成
 

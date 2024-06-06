@@ -4,7 +4,7 @@
 
 ### COLMAP
 - [下载地址](https://github.com/colmap/colmap)
-- [实例文档](https://colmap.github.io/tutorial.html)
+- [帮助文档](https://colmap.github.io/tutorial.html)
   
 ### NeRF框架地址
 - [框架主页](https://www.matthewtancik.com/nerf)
