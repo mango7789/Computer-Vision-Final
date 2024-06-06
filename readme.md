@@ -2,10 +2,13 @@
 
 > [!WARNING]
 > 开发&训练环境：Windows 11 & Ubuntu 9.4.0, Python 3.11.6   
+> 计算资源：RTX3090
 
 > [!NOTE]
-> 任务要求可点击展开，显示“基本要求”和“提交要求”   
-> 可点击对应的**代码地址**跳转到相应的文件目录，每个目录下均有对应的`readme`文件 
+> 1. Python版本建议在**3.10及以上**，部分代码使用了3.10版本的特性（如`match`, `case`）  
+> 2. 任务要求可点击展开，显示“基本要求”和“提交要求”   
+> 3. 可点击**代码地址**跳转到对应的文件目录，每个目录下均有对应的`readme`文件，可根据其说明进行相应任务的训练和测试 
+> 4. 项目报告均在overleaf上以 $\LaTeX$ 进行撰写，可点击对应的**报告链接**进行查看
 
 ---
 
@@ -28,6 +31,9 @@
 #### 代码地址
 - https://github.com/mango7789/Computer-Vision-Final/tree/main/Supervise
 
+#### 报告链接
+- https://cn.overleaf.com/project/665d8af812d89a8812ae678b
+
 ---
 
 ### 任务2：在CIFAR-100数据集上比较基于Transformer和CNN的图像分类模型
@@ -49,6 +55,9 @@
 
 #### 代码地址
 - https://github.com/mango7789/Computer-Vision-Final/tree/main/CIFAR-100
+
+#### 报告链接
+- https://cn.overleaf.com/project/665d8aeb625559847b1489fd
 
 ---
 

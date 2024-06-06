@@ -67,11 +67,10 @@ def train_byol(
     # define the model with ResNet-18 as the basic encoder
     model = BYOL(Encoder, hidden_dim, output_dim, momentum=update_rate).to(device)
     
-    # define optimizer
-    # NOTE: since we use adam as the optimizer, the learning rate will be adjusted dynamically, so 
-    #       no additional scheduler is applied here
+    # define optimizer and scheduler
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
-
+    scheduler = MultiStepLR(optimizer, milestones=[10, 20], gamma=0.1)
+    
     # set the configuration for the logger
     log_directory = os.path.join(output_dir, 'BYOL')
     if not os.path.exists(log_directory):
@@ -116,6 +115,7 @@ def train_byol(
 
             samples += img1.size(0)   # add the batch size
         
+        scheduler.step()
         training_loss = running_loss / samples
         
         logger.info("[Epoch {:>2} / {:>2}], Training loss is {:>8.6f}".format(epoch + 1, epochs, training_loss))
@@ -188,7 +188,7 @@ def train_resnet18(
     criterion = nn.CrossEntropyLoss()
     
     # define optimizer & scheduler
-    optimizer = optim.SGD(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
+    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
     scheduler = MultiStepLR(optimizer, milestones=[10, 20], gamma=0.1)
 
     # set the configuration for the logger
