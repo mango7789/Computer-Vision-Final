@@ -15,11 +15,11 @@ from utils import seed_everything, get_tinyimage_dataloader, get_cifar_100_datal
 
 def train_byol(
         epochs: int=30,
-        lr :float=0.001,
-        hidden_dim :int=4096,
-        output_dim :int=256,
+        lr: float=0.001,
+        hidden_dim: int=4096,
+        output_dim: int=256,
         update_rate: float=0.996,
-        save :bool=False,
+        save: bool=False,
         **kwargs
     ) -> Encoder:
     """
@@ -142,7 +142,7 @@ def fetch_resnet18() -> Encoder:
 
 def train_resnet18(
         epochs: int=30,
-        lr :float=0.001,
+        lr: float=0.001,
         save: bool=False,
         **kwargs
     ):
@@ -278,17 +278,17 @@ class LinearClassifier(nn.Module):
     """
     Use a traditional MLP as the lienar classifier protocol.
     """
-    def __init__(self, input_dim :int=512, num_classes :int=100):
+    def __init__(self, input_dim: int=512, num_classes: int=100):
         super(LinearClassifier, self).__init__()
         self.fc = nn.Linear(input_dim, num_classes)
     
-    def forward(self, x :torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.fc(x)
 
 
 def train_linear_classifier(
-        train_features :torch.Tensor, train_labels :torch.Tensor, 
-        test_features :torch.Tensor, test_labels :torch.Tensor,
+        train_features: torch.Tensor, train_labels: torch.Tensor, 
+        test_features: torch.Tensor, test_labels: torch.Tensor,
         epochs: int=100, learning_rate: float=0.001, 
         type: str=Literal['self_supervise', 'supervise_with_pretrain', 'supervise_no_pretrain'],
         save: bool=False

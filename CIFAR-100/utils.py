@@ -99,7 +99,7 @@ class CutMix:
     """
     CutMix for data augumentation of the CIFAR-100 dataset.
     """
-    def __init__(self, beta :float=1.0):
+    def __init__(self, beta: float=1.0):
         self.beta = beta
 
     def __call__(self, x: torch.Tensor, y: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, float]:

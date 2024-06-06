@@ -33,7 +33,7 @@ class TinyImageNetDataset(Dataset):
     A subclass of class `Dataset` implemented in `torch.utils.data`, used specifically for the
     Tiny-ImageNet-200 dataset.
     """
-    def __init__(self, root_dir :str, transform_one :transforms.Compose, transform_two :transforms.Compose):
+    def __init__(self, root_dir: str, transform_one: transforms.Compose, transform_two: transforms.Compose):
         self.root_dir = root_dir
         self.transform_1 = transform_one
         self.transform_2 = transform_two
@@ -116,7 +116,7 @@ class TinyImageNetDataset(Dataset):
     def __len__(self) -> int:
         return len(self.data)
 
-    def __getitem__(self, idx) -> Tuple[torch.Tensor, List[int]]:
+    def __getitem__(self, idx: int) -> Tuple[torch.Tensor, List[int]]:
         img_path = self.data[idx]
         label = self.labels[idx]
         

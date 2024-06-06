@@ -48,7 +48,7 @@ class BYOL(nn.Module):
     Bootstrap Your Own Latent, often abbrred as BYOL. It relies on two neural networks, referred to 
     as online and target networks, that interact and learn from each other.
     """
-    def __init__(self, base_encoder, hidden_dim :int, output_dim :int, momentum :float):
+    def __init__(self, base_encoder, hidden_dim: int, output_dim: int, momentum: float):
         super(BYOL, self).__init__()
         self.momentum = momentum
 
@@ -68,7 +68,7 @@ class BYOL(nn.Module):
             param.requires_grad = False
 
 
-    def forward(self, x1 :torch.Tensor, x2 :torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    def forward(self, x1: torch.Tensor, x2: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         
         # online network forward pass
         online_proj1 = self.online_projection(self.online_encoder(x1))
@@ -95,7 +95,7 @@ class BYOL(nn.Module):
     
     
     @staticmethod
-    def loss(pred1 :torch.Tensor, pred2 :torch.Tensor, target1 :torch.Tensor, target2 :torch.Tensor):
+    def loss(pred1: torch.Tensor, pred2: torch.Tensor, target1: torch.Tensor, target2: torch.Tensor):
         """
         Compute the loss between the predicted tensor and target tensor. Loss is summed over two 
         different views using `cosine_similarity`.
