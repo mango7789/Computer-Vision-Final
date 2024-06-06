@@ -2,9 +2,11 @@
 
 ### 文件结构
 
-### 相机参数
-
-### 框架地址
+### COLMAP
+- [下载地址](https://github.com/colmap/colmap)
+- [实例文档](https://colmap.github.io/tutorial.html)
+  
+### NeRF框架地址
 - https://www.matthewtancik.com/nerf
 
 ### 原数据集&模型权重&视频链接
