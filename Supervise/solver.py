@@ -176,7 +176,7 @@ def train_resnet18(
     seed_everything(seed)
     
     # get the dataloader
-    train_loader = get_cifar_100_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
+    train_loader, _ = get_cifar_100_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
     
     # get the device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
