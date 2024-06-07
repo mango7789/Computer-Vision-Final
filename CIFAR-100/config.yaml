@@ -16,5 +16,5 @@ train:
   save: false
 
 test:
-  cnn_path: './model/CNN-CIFAR100.pth'
-  vit_path: './model/ViT-CIFAR100.pth'
+  cnn_path: 'CNN-CIFAR100.pth'
+  vit_path: 'ViT-CIFAR100.pth'

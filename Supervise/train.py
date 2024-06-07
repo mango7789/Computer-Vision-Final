@@ -43,7 +43,10 @@ def resnet(args):
     )
 
 def linear(args):
-    model = Encoder().load_state_dict(torch.load(args.model))
+    model = Encoder()
+    model.load_state_dict(torch.load(args.model))
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model.to(device)
     train_loader, test_loader = get_cifar_100_dataloader()
     train_feature, train_label = extract_features(model, train_loader)
     test_feature, test_label = extract_features(model, test_loader)

@@ -240,10 +240,12 @@ def train_with_params(
                     os.mkdir('./model')
                 torch.save(model.state_dict(), os.path.join('model', '{}-CIFAR100.pth'.format(nn_name)))
         
+    logging.shutdown()
+        
     return best_acc
 
 
-def test_with_model(data_root: str='./data/', path: str='./model/CNN-CIFAR100.pth'):
+def test_with_model(data_root: str, path: str):
     """
     Test the trained model on the CIFAR-100 dataset.
     
@@ -254,7 +256,7 @@ def test_with_model(data_root: str='./data/', path: str='./model/CNN-CIFAR100.pt
     
     # get the dataset, model and loss criterion
     train_loader, test_loader = get_cifar_dataloader(root=data_root)
-    nn_name = path.split('/')[2][:3]
+    nn_name = path.split(os.sep)[-1][:3]
     
     match nn_name:
         case 'CNN':

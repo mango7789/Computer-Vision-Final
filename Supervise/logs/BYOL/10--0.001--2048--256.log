@@ -1,0 +1,10 @@
+2024-06-07 21:01:19 - INFO - [Epoch  1 / 10], Training loss is 0.023353
+2024-06-07 21:05:20 - INFO - [Epoch  2 / 10], Training loss is 0.022918
+2024-06-07 21:09:26 - INFO - [Epoch  3 / 10], Training loss is 0.022663
+2024-06-07 21:13:25 - INFO - [Epoch  4 / 10], Training loss is 0.022533
+2024-06-07 21:17:44 - INFO - [Epoch  5 / 10], Training loss is 0.022402
+2024-06-07 21:22:03 - INFO - [Epoch  6 / 10], Training loss is 0.022315
+2024-06-07 21:26:02 - INFO - [Epoch  7 / 10], Training loss is 0.022143
+2024-06-07 21:30:02 - INFO - [Epoch  8 / 10], Training loss is 0.022044
+2024-06-07 21:34:01 - INFO - [Epoch  9 / 10], Training loss is 0.022024
+2024-06-07 21:38:01 - INFO - [Epoch 10 / 10], Training loss is 0.021973
