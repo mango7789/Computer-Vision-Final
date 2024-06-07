@@ -24,7 +24,7 @@
     - 运行`train.sh`脚本，可在文件对应的位置修改参数
       ```bash
       chmod +x train.sh
-      .\train.sh
+      ./train.sh
       ```
     - 运行`train.ipynb`，可在对应的代码块中修改参数
 - 测试

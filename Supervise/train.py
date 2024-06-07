@@ -1,6 +1,9 @@
 import yaml
 import argparse
-from solver import train_byol, train_resnet18
+import torch
+from utils import get_cifar_100_dataloader
+from model import Encoder
+from solver import train_byol, train_resnet18, extract_features, train_linear_classifier
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -10,6 +13,7 @@ with open('config.yaml', 'r') as f:
     config = yaml.safe_load(f)
 BYOL_TRAIN_CONFIG = config['stream'] | config['common'] | config['train']['byol']
 RESNET_TRAIN_CONFIG = config['stream'] | config['common'] | config['train']['resnet']
+LINEAR_TRAIN_CONFIG = config['common'] | config['train']['linear']
 
 def byol(args):
     train_byol(
@@ -37,6 +41,18 @@ def resnet(args):
         num_workers=args.num_workers,
         weight_decay=args.weight_decay
     )
+
+def linear(args):
+    model = Encoder().load_state_dict(torch.load(args.model))
+    train_loader, test_loader = get_cifar_100_dataloader()
+    train_feature, train_label = extract_features(model, train_loader)
+    test_feature, test_label = extract_features(model, test_loader)
+    train_linear_classifier(
+        train_feature, train_label, test_feature, test_label, 
+        epochs=args.epochs, learning_rate=args.lr,
+        type=args.type, save=args.save
+    )
+
 
 def train():
     parser = argparse.ArgumentParser(description='Training models on the Tiny-ImageNet dataset.')
@@ -75,7 +91,19 @@ def train():
 
     
     resnet_parser.set_defaults(func=resnet)
+    
+    # Linear Classifier training parser
+    linear_parser = subparsers.add_parser('linear', help='Train the linear classifier for the features')
+    
+    linear_parser.add_argument('--epochs'       , type=int  , default=LINEAR_TRAIN_CONFIG['epochs']     , help='Number of training epochs for ResNet-18')
+    linear_parser.add_argument('--lr'           , type=float, default=LINEAR_TRAIN_CONFIG['lr']         , help='Learning rate of the optimizer')
+    
+    linear_parser.add_argument('--model'        , type=str  , default='./model/byol.pth', help='Path to the trained model')
+    linear_parser.add_argument('--type'         , type=str  , choices=['self_supervise', 'supervise_with_pretrain', 'supervise_no_pretrain'], help='Types of training')
+    linear_parser.add_argument('--save'         , action='store_true'                                   , help='Save the trained linear model')
 
+    
+    
     args = parser.parse_args()
     args.func(args)
 

@@ -130,6 +130,9 @@ def train_byol(
             os.mkdir('./model')
             torch.save(model.state_dict(), os.path.join('./model', save_path))
     
+    # close the logger 
+    logging.shutdown()
+    
     return model.online_encoder
 
 
@@ -240,10 +243,13 @@ def train_resnet18(
     
     # save the trained resnet18 model
     if save:
-        save_path = 'resnet18.pth'
+        save_path = 'resnet_no_pretrain.pth'
         if not os.path.exists('./model'):
             os.mkdir('./model')
             torch.save(model.state_dict(), os.path.join('./model', save_path))
+    
+    # close the logger 
+    logging.shutdown()
     
     return model
 
@@ -286,6 +292,19 @@ class LinearClassifier(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.fc(x)
 
+class MLPClassifier(nn.Module):
+    def __init__(self, input_dim: int, hidden_dim: int=1024, output_dim: int=100):
+        super(MLPClassifier, self).__init__()
+        self.fc1 = nn.Linear(input_dim, hidden_dim)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_dim, output_dim)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = self.fc1(x)
+        x = self.relu(x)
+        x = self.fc2(x)
+        return x
+
 
 def train_linear_classifier(
         train_features: torch.Tensor, train_labels: torch.Tensor, 
@@ -306,7 +325,7 @@ def train_linear_classifier(
 
     # initialize the linear classifier
     input_dim = train_features.shape[1]
-    classifier = LinearClassifier(input_dim).to(device)
+    classifier = MLPClassifier(input_dim).to(device)
 
     # define criterion, optimizer and scheduler
     criterion = nn.CrossEntropyLoss()
@@ -380,5 +399,8 @@ def train_linear_classifier(
                     if not os.path.exists('./model'):
                         os.mkdir('./model')
                     torch.save(classifier.state_dict(), os.path.join('model', '{}.pth'.format(type)))
+    
+    # close the logger 
+    logging.shutdown()        
             
     return best_accuracy

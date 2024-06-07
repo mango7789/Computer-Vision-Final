@@ -1,9 +1,9 @@
 #!/bin/bash
 
-model=("CNN" "ViT")
+models=("CNN" "ViT")
 root='./data/'
 
-# define hyper-paramters here
+# define hyper-paramters for grid search
 epochs=3
 ft_lrs=(5e-5 1e-4 5e-4)
 fc_lrs=(1e-3 5e-3 1e-2)
@@ -27,3 +27,19 @@ for model in "${models[@]}"; do
     done
 done
 
+# define best hyper-params for full train
+epochs=15
+ft_lr=5e-4
+fc_lr=1e-2
+batch=64
+betas=(0.0 1.0)
+
+# iterate through all models and betas
+# if beta == 0, the `CutMix` is not applied, else it's applied
+for model in "${models[@]}"; do
+    for beta in "${betas[@]}"; do
+        python train.py --model $model --epochs $epochs \
+            --ft_lr $ft_lr --fc_lr $fc_lr \
+            --root $root --beta $beta
+    done
+done
