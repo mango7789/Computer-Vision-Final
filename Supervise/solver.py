@@ -14,7 +14,7 @@ from utils import seed_everything, get_tinyimage_dataloader, get_cifar_100_datal
 
 
 def train_byol(
-        epochs: int=30,
+        epochs: int=10,
         lr: float=0.001,
         hidden_dim: int=4096,
         output_dim: int=256,
@@ -69,7 +69,7 @@ def train_byol(
     
     # define optimizer and scheduler
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
-    scheduler = MultiStepLR(optimizer, milestones=[10, 20], gamma=0.1)
+    scheduler = MultiStepLR(optimizer, milestones=[6, 8], gamma=0.1)
     
     # set the configuration for the logger
     log_directory = os.path.join(output_dir, 'BYOL')
@@ -94,11 +94,11 @@ def train_byol(
     ############################################################################  
     
     model.train()
-    for epoch in tqdm(range(epochs)):
+    for epoch in range(epochs):
         # TODO: The calculation of the loss.
         samples = 0
         running_loss = 0
-        for (img1, img2, _) in train_loader:
+        for (img1, img2, _) in tqdm(train_loader):
             
             optimizer.zero_grad()
             
@@ -142,7 +142,7 @@ def fetch_resnet18() -> Encoder:
 
 
 def train_resnet18(
-        epochs: int=30,
+        epochs: int=10,
         lr: float=0.001,
         save: bool=False,
         **kwargs
@@ -151,7 +151,7 @@ def train_resnet18(
     Train ResNet-18 from scratch on the CIFAR-100 dataset using supervised learning.
     
     Args:
-    - epochs: Number of training epochs, default is 30.
+    - epochs: Number of training epochs, default is 10.
     - lr: Learning rate, default is 0.001.
     - save: Whether the model should be saved, default is False.
     """
@@ -190,7 +190,7 @@ def train_resnet18(
     
     # define optimizer & scheduler
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
-    scheduler = MultiStepLR(optimizer, milestones=[10, 20], gamma=0.1)
+    scheduler = MultiStepLR(optimizer, milestones=[6, 8], gamma=0.1)
 
     # set the configuration for the logger
     log_directory = os.path.join(output_dir, 'ResNet-18')
@@ -215,11 +215,11 @@ def train_resnet18(
     ############################################################################  
     
     model.train()
-    for epoch in tqdm(range(epochs)):
+    for epoch in range(epochs):
         
         samples = 0
         running_loss = 0.0
-        for inputs, labels in train_loader:
+        for inputs, labels in tqdm(train_loader):
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
             
@@ -314,7 +314,7 @@ def train_linear_classifier(
     scheduler = MultiStepLR(optimizer, milestones=[40, 80], gamma=0.1)
 
     # set the configuration for the logger
-    log_directory = os.path.join('./log', 'linear_classifier')
+    log_directory = os.path.join('./logs', 'linear_classifier')
     os.makedirs(log_directory, exist_ok=True)
     log_file_path = os.path.join(log_directory, '{}.log'.format(type))
     
@@ -370,7 +370,7 @@ def train_linear_classifier(
             accuracy = (predicted == test_labels).float().mean().item()
             
             logger.info("[Epoch {:>2} / {:>2}], Validation loss is {:>8.6f}, Validation accuracy is {:>8.6f}".format(
-                epoch + 1, epochs, accuracy, validation_loss 
+                epoch + 1, epochs, validation_loss, accuracy 
             ))
             
             # update the best accuracy and save the model if it improves

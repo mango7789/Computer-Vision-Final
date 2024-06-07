@@ -2,6 +2,8 @@ import yaml
 import argparse
 from solver import train_byol, train_resnet18
 
+import warnings
+warnings.filterwarnings('ignore')
 
 # get the default training configurations
 with open('config.yaml', 'r') as f:

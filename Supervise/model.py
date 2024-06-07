@@ -97,15 +97,17 @@ class BYOL(nn.Module):
     @staticmethod
     def loss(pred1: torch.Tensor, pred2: torch.Tensor, target1: torch.Tensor, target2: torch.Tensor):
         """
-        Compute the loss between the predicted tensor and target tensor. Loss is summed over two 
-        different views using `cosine_similarity`.
+        Compute the loss between the predicted tensor and target tensor. Loss is meaned over two 
+        different views.
         ```python
         # NOTE: This is an abstract method, so it should be called with a reference to the class itself.
         >>> BYOL.loss(pred1, pred2, target1, target2)
         ```
         """
-        loss = 2 - 2 * (
-            F.cosine_similarity(pred1, target2.detach(), dim=-1).mean() +
-            F.cosine_similarity(pred2, target1.detach(), dim=-1).mean()
-        )
-        return loss
+        pred1 = F.normalize(pred1, dim=-1, p=2)
+        pred2 = F.normalize(pred2, dim=-1, p=2)
+        target1 = F.normalize(target1.detach(), dim=-1, p=2)
+        target2 = F.normalize(target2.detach(), dim=-1, p=2)
+        loss_one = 2 - 2 * (pred1 * target2).sum(dim=-1)
+        loss_two = 2 - 2 * (pred2 * target1).sum(dim=-1)
+        return (loss_one + loss_two).mean()

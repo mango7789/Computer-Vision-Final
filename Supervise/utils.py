@@ -6,6 +6,7 @@ from PIL import Image
 from tqdm import tqdm
 
 import torch
+import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader
@@ -26,6 +27,20 @@ def seed_everything(seed: int=None):
 
 # TODO: add a dataloader for CIFAR-10, since we need to find the impact from the 
 #       scale(size) of dataset.
+    
+class RandomApply(nn.Module):
+    """
+    Randomly apply the transformation if the new generated random value 
+    is higher than the threshold `p`.
+    """
+    def __init__(self, fn: transforms.Compose, p: float):
+        super().__init__()
+        self.fn = fn
+        self.p = p
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        if random.random() > self.p:
+            return x
+        return self.fn(x)
 
 
 class TinyImageNetDataset(Dataset):
@@ -145,23 +160,41 @@ def get_tinyimage_dataloader(root: str='./data', batch_size: int=64, num_workers
     
     # define data augmentation and normalization for training dataset
     transform_one = transforms.Compose([
-        transforms.RandomResizedCrop(224),
-        transforms.RandomHorizontalFlip(),
-        transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.1),
+        RandomApply(
+            transforms.ColorJitter(brightness=0.8, contrast=0.8, saturation=0.8, hue=0.2),
+            p = 0.3
+        ),
         transforms.RandomGrayscale(p=0.2),
-        transforms.GaussianBlur(kernel_size=(23, 23)),
+        transforms.RandomHorizontalFlip(),
+        RandomApply(
+            transforms.GaussianBlur(kernel_size=(3, 3), sigma=(1.0, 2.0)),
+            p = 0.2
+        ),
+        transforms.RandomResizedCrop(224),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        transforms.Normalize(
+            mean=torch.tensor([0.485, 0.456, 0.406]),
+            std=torch.tensor([0.229, 0.224, 0.225])
+        )
     ])
     
     transform_two = transforms.Compose([
-        transforms.RandomResizedCrop(224),
-        transforms.RandomHorizontalFlip(),
-        transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.1),
+        RandomApply(
+            transforms.ColorJitter(brightness=0.8, contrast=0.8, saturation=0.8, hue=0.2),
+            p = 0.3
+        ),
         transforms.RandomGrayscale(p=0.2),
-        transforms.GaussianBlur(kernel_size=(23, 23)),
+        transforms.RandomHorizontalFlip(),
+        RandomApply(
+            transforms.GaussianBlur(kernel_size=(3, 3), sigma=(1.0, 2.0)),
+            p = 0.2
+        ),
+        transforms.RandomResizedCrop(224),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        transforms.Normalize(
+            mean=torch.tensor([0.485, 0.456, 0.406]),
+            std=torch.tensor([0.229, 0.224, 0.225])
+        )
     ])
     
     # get the training dataloader
@@ -213,3 +246,4 @@ def get_cifar_100_dataloader(root: str='./data', batch_size: int=64, num_workers
 
 if __name__ == '__main__':
     get_tinyimage_dataloader()
+    get_cifar_100_dataloader()
