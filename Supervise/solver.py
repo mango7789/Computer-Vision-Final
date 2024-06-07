@@ -137,7 +137,8 @@ def fetch_resnet18() -> Encoder:
     """
     Return the pretrained ResNet-18 on ImageNet.
     """
-    return Encoder(pretrain=True)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    return Encoder(pretrain=True).to(device)
 
 
 def train_resnet18(
@@ -145,7 +146,7 @@ def train_resnet18(
         lr: float=0.001,
         save: bool=False,
         **kwargs
-    ):
+    ) -> Encoder:
     """
     Train ResNet-18 from scratch on the CIFAR-100 dataset using supervised learning.
     
