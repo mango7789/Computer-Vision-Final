@@ -252,6 +252,7 @@ def test_with_model(data_root: str, path: str):
     Args:
     - data_root: The stored directory of the dataset.
     - path: Path to the .pth file. 
+    - save: Whether the test results will be saved.
     """
     
     # get the dataset, model and loss criterion
@@ -349,20 +350,34 @@ def test_with_model(data_root: str, path: str):
                     class_correct_top5[label] += correct_top5[:, labels == label].sum().item()
                     class_samples[label] += (labels == label).sum().item()
         
-        for label in sorted(class_samples.keys()):
-            accuracy_top1 = class_correct_top1[label] / class_samples[label]
-            accuracy_top5 = class_correct_top5[label] / class_samples[label]
-            print("For class {:^30} on the CIFAR-100 dataset, Top-1 accuracy is {:>8.6f}, Top-5 accuracy is {:>8.6f}".format(
-                cifar100_classes[label], accuracy_top1, accuracy_top5
+        file_path = f"./logs/{nn_name.lower()}-accuracy.txt"
+
+        # clear the content in the file if it exists
+        if os.path.exists(file_path):
+            open(file_path, 'w').close()
+        
+        with open(file_path, "w") as file:
+            for label in sorted(class_samples.keys()):
+                accuracy_top1 = class_correct_top1[label] / class_samples[label]
+                accuracy_top5 = class_correct_top5[label] / class_samples[label]
+                file.write("For class {:^30} on the CIFAR-100 dataset, Top-1 accuracy is {:>8.6f}, Top-5 accuracy is {:>8.6f}\n".format(
+                    cifar100_classes[label], accuracy_top1, accuracy_top5
+                ))
+                print("For class {:^30} on the CIFAR-100 dataset, Top-1 accuracy is {:>8.6f}, Top-5 accuracy is {:>8.6f}\n".format(
+                    cifar100_classes[label], accuracy_top1, accuracy_top5
+                ))
+
+            total_accuracy_top1 = total_correct_top1 / total_samples
+            total_accuracy_top5 = total_correct_top5 / total_samples
+
+            file.write("=" * 120 + "\n")
+            file.write("For the best model on the CIFAR-100 dataset, Total Top-1 accuracy is {:>8.6f}, Total Top-5 accuracy is {:>8.6f}\n".format(
+                total_accuracy_top1, total_accuracy_top5
             ))
-
-        total_accuracy_top1 = total_correct_top1 / total_samples
-        total_accuracy_top5 = total_correct_top5 / total_samples
-
-        print("=" * 120)
-        print("For the best model on the CIFAR-100 dataset, Total Top-1 accuracy is {:>8.6f}, Total Top-5 accuracy is {:>8.6f}".format(
-            total_accuracy_top1, total_accuracy_top5
-        ))
+            print("=" * 121 + "\n")
+            print("For the best model on the CIFAR-100 dataset, Total Top-1 accuracy is {:>8.6f}, Total Top-5 accuracy is {:>8.6f}\n".format(
+                total_accuracy_top1, total_accuracy_top5
+            ))
 
     # dataset_accuracy(model, train_loader, 'train')
     dataset_accuracy(model, test_loader, 'test')
