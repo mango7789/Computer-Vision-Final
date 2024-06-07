@@ -102,7 +102,7 @@ def train():
     linear_parser.add_argument('--type'         , type=str  , choices=['self_supervise', 'supervise_with_pretrain', 'supervise_no_pretrain'], help='Types of training')
     linear_parser.add_argument('--save'         , action='store_true'                                   , help='Save the trained linear model')
 
-    
+    linear_parser.set_defaults(func=linear)
     
     args = parser.parse_args()
     args.func(args)

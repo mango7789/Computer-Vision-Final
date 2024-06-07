@@ -128,7 +128,7 @@ def train_byol(
         save_path = 'byol.pth'
         if not os.path.exists('./model'):
             os.mkdir('./model')
-            torch.save(model.state_dict(), os.path.join('./model', save_path))
+        torch.save(model.state_dict(), os.path.join('./model', save_path))
     
     # close the logger 
     logging.shutdown()
@@ -145,7 +145,7 @@ def fetch_resnet18() -> Encoder:
 
 
 def train_resnet18(
-        epochs: int=10,
+        epochs: int=20,
         lr: float=0.001,
         save: bool=False,
         **kwargs
@@ -154,7 +154,7 @@ def train_resnet18(
     Train ResNet-18 from scratch on the CIFAR-100 dataset using supervised learning.
     
     Args:
-    - epochs: Number of training epochs, default is 10.
+    - epochs: Number of training epochs, default is 20.
     - lr: Learning rate, default is 0.001.
     - save: Whether the model should be saved, default is False.
     """
@@ -193,7 +193,7 @@ def train_resnet18(
     
     # define optimizer & scheduler
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
-    scheduler = MultiStepLR(optimizer, milestones=[6, 8], gamma=0.1)
+    scheduler = MultiStepLR(optimizer, milestones=[10, 15], gamma=0.1)
 
     # set the configuration for the logger
     log_directory = os.path.join(output_dir, 'ResNet-18')
@@ -246,7 +246,7 @@ def train_resnet18(
         save_path = 'resnet_no_pretrain.pth'
         if not os.path.exists('./model'):
             os.mkdir('./model')
-            torch.save(model.state_dict(), os.path.join('./model', save_path))
+        torch.save(model.state_dict(), os.path.join('./model', save_path))
     
     # close the logger 
     logging.shutdown()

@@ -2,7 +2,7 @@
 
 > [!WARNING]
 > 开发&训练环境：Windows 11 & Ubuntu 9.4.0, Python 3.11.6   
-> 计算资源：RTX3090
+> 计算资源：RTX 3090
 
 > [!NOTE]
 > 1. Python版本建议在**3.10及以上**，部分代码使用了3.10版本的特性（如`match`, `case`）  

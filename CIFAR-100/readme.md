@@ -1,4 +1,4 @@
-<h2 style="text-align: center;"> 任务2：在CIFAR-100数据集上比较基于Transformer和CNN的图像分类模型 </h2>
+<h2 align="center"> 任务2：在CIFAR-100数据集上比较基于Transformer和CNN的图像分类模型 </h2>
 
 ### 文件结构
 

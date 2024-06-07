@@ -1,4 +1,4 @@
-<h2 style="text-align: center;"> 任务3：基于NeRF的物体重建和新视图合成 </h2>
+<h2 align="center"> 任务3：基于NeRF的物体重建和新视图合成 </h2>
 
 ### 文件结构
 
