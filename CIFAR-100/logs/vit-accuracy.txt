@@ -98,5 +98,5 @@ For class             rocket             on the CIFAR-100 dataset, Top-1 accurac
 For class           streetcar            on the CIFAR-100 dataset, Top-1 accuracy is 0.962500, Top-5 accuracy is 0.981250
 For class              tank              on the CIFAR-100 dataset, Top-1 accuracy is 0.868421, Top-5 accuracy is 1.000000
 For class            tractor             on the CIFAR-100 dataset, Top-1 accuracy is 0.936620, Top-5 accuracy is 1.000000
-========================================================================================================================
+=========================================================================================================================
 For the best model on the CIFAR-100 dataset, Total Top-1 accuracy is 0.918400, Total Top-5 accuracy is 0.992100
