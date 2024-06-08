@@ -1,8 +1,9 @@
 import yaml
 import argparse
 import torch
+import torch.nn as nn
+from torchvision.models import resnet18
 from utils import get_cifar_100_dataloader
-from model import Encoder
 from solver import train_byol, train_resnet18, extract_features, train_linear_classifier
 
 import warnings
@@ -43,7 +44,8 @@ def resnet(args):
     )
 
 def linear(args):
-    model = Encoder()
+    model = resnet18()
+    model.fc = nn.Identity()
     model.load_state_dict(torch.load(args.model))
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)

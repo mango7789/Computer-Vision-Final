@@ -1,3 +1,9 @@
+byol_pytorch==0.8.1
+ConfigArgParse==1.7
+imageio==2.34.1
+matplotlib==3.9.0
+numpy==1.26.4
+opencv_python==4.9.0.80
 Pillow==10.3.0
 PyYAML==6.0.1
 torch==2.3.0

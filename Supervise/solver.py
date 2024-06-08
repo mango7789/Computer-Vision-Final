@@ -8,8 +8,9 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import MultiStepLR
+from torchvision.models import resnet18
+from byol_pytorch import BYOL
 
-from model import Encoder, BYOL
 from utils import seed_everything, get_tinyimage_dataloader, get_cifar_100_dataloader
 
 
@@ -18,10 +19,10 @@ def train_byol(
         lr: float=0.001,
         hidden_dim: int=4096,
         output_dim: int=256,
-        update_rate: float=0.996,
+        update_rate: float=0.99,
         save: bool=False,
         **kwargs
-    ) -> Encoder:
+    ) -> resnet18:
     """
     Train BYOL on the Tiny-ImageNet dataset with ResNet-18 as the base encoder, return
     the trained online encoder.
@@ -31,7 +32,7 @@ def train_byol(
     - lr: The learning rate of the optimizer, default is 0.003.
     - hidden_dim: The dimension of the projection space, default is 4096.
     - output_dim: The dimension of the prediction space, default is 256.
-    - update_rate: The update rate of the target by moving average.
+    - update_rate: The update rate of the target by moving average, default is 0.99.
     - save: Boolean, whether the model should be saved.
     - kwargs: Contain `seed`, `data_root`, `batch_size`, `num_workers`, 
         `weight_decay` and `lr_configs`.
@@ -65,7 +66,15 @@ def train_byol(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
     # define the model with ResNet-18 as the basic encoder
-    model = BYOL(Encoder, hidden_dim, output_dim, momentum=update_rate).to(device)
+    base_encoder = resnet18(weights=None).to(device)
+    base_encoder.fc = nn.Identity()
+    model = BYOL(
+        net=base_encoder, 
+        image_size=224,
+        projection_size=output_dim,
+        projection_hidden_size=hidden_dim, 
+        moving_average_decay=update_rate
+    ).to(device)
     
     # define optimizer and scheduler
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
@@ -98,30 +107,32 @@ def train_byol(
         # TODO: The calculation of the loss.
         samples = 0
         running_loss = 0
-        for (img1, img2, _) in tqdm(train_loader):
+        for img, _ in tqdm(train_loader):
             
             optimizer.zero_grad()
             
-            # inspect the image from two different views   
-            img1, img2 = img1.to(device), img2.to(device)
+            # inspect the image from two different views  
+            img = img.to(device)
                  
-            pred1, pred2, target1, target2 = model(img1, img2)
-            loss = BYOL.loss(pred1, pred2, target1, target2)
+            loss = model(img)
             
+            # backward pass and optimization
             loss.backward()
             optimizer.step()
             
             running_loss += loss.item()
 
-            samples += img1.size(0)   # add the batch size
+            samples += img.size(0)   # add the batch size
+            
+            # update target network
+            model.update_moving_average()
         
         scheduler.step()
         training_loss = running_loss / samples
         
         logger.info("[Epoch {:>2} / {:>2}], Training loss is {:>8.6f}".format(epoch + 1, epochs, training_loss))
         
-        # update target network
-        model.update_target_network()
+
     
     # save the trained byol model
     if save:
@@ -133,15 +144,17 @@ def train_byol(
     # close the logger 
     logging.shutdown()
     
-    return model.online_encoder
+    return model.online_encoder.net
 
 
-def fetch_resnet18() -> Encoder:
+def fetch_resnet18() -> resnet18:
     """
     Return the pretrained ResNet-18 on ImageNet.
     """
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    return Encoder(pretrain=True).to(device)
+    model = resnet18(weights="ResNet18_Weights.IMAGENET1K_V1").to(device)
+    model.fc = nn.Identity()
+    return model
 
 
 def train_resnet18(
@@ -149,7 +162,7 @@ def train_resnet18(
         lr: float=0.001,
         save: bool=False,
         **kwargs
-    ) -> Encoder:
+    ) -> resnet18:
     """
     Train ResNet-18 from scratch on the CIFAR-100 dataset using supervised learning.
     
@@ -186,7 +199,8 @@ def train_resnet18(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
     # define the model
-    model = Encoder().to(device)
+    model = resnet18(weights=None).to(device)
+    model.fc = nn.Identity()
     
     # define the loss function
     criterion = nn.CrossEntropyLoss()
