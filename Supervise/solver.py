@@ -71,6 +71,7 @@ def train_byol(
     model = BYOL(
         net=base_encoder, 
         image_size=224,
+        hidden_layer='avgpool',
         projection_size=output_dim,
         projection_hidden_size=hidden_dim, 
         moving_average_decay=update_rate
@@ -298,29 +299,21 @@ def extract_features(encoder: nn.Module, data_loader: DataLoader) -> Tuple[torch
     return torch.cat(features, dim=0).to(device), torch.cat(labels, dim=0).to(device)
 
 
-class LinearClassifier(nn.Module):
-    """
-    Use a traditional MLP as the lienar classifier protocol.
-    """
-    def __init__(self, input_dim: int=512, num_classes: int=100):
-        super(LinearClassifier, self).__init__()
-        self.fc = nn.Linear(input_dim, num_classes)
-    
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.fc(x)
-
 class MLPClassifier(nn.Module):
-    def __init__(self, input_dim: int, hidden_dim: int=1024, output_dim: int=100):
+    def __init__(self, input_dim: int, num_classes: int=100):
         super(MLPClassifier, self).__init__()
-        self.fc1 = nn.Linear(input_dim, hidden_dim)
-        self.relu = nn.ReLU()
-        self.fc2 = nn.Linear(hidden_dim, output_dim)
+        self.fc1 = nn.Linear(input_dim, 512)
+        self.bn1 = nn.BatchNorm1d(512)
+        self.fc2 = nn.Linear(512, 256)
+        self.bn2 = nn.BatchNorm1d(256)
+        self.fc3 = nn.Linear(256, num_classes)
+        self.dropout = nn.Dropout(0.5)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.fc1(x)
-        x = self.relu(x)
-        x = self.fc2(x)
-        return x
+        x = self.dropout(nn.ReLU(self.bn1(self.fc1(x))))
+        x = self.dropout(nn.ReLU(self.bn2(self.fc2(x))))
+        x = self.fc3(x)
+        return x    
 
 
 def train_linear_classifier(
