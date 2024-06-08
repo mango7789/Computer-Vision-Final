@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from utils import seed_everything, get_cifar_dataloader, get_cnn_model, get_vit_model, CutMix
+from utils import seed_everything, get_cifar_dataloader, get_cnn_model, get_vit_model, CutMix, clear_log_file
 
 def calculate_topk_correct(output: torch.Tensor, target: torch.Tensor, topk=(1, 5)) -> List[int]:
     """
@@ -141,6 +141,8 @@ def train_with_params(
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
     log_file_path = os.path.join(log_directory, '{}--{}--{}--{}.log'.format(epochs, ft_lr, fc_lr, batch_size))
+    
+    clear_log_file(log_file_path)
     
     logging.basicConfig(
         level=logging.INFO,

@@ -11,7 +11,7 @@ from torch.optim.lr_scheduler import MultiStepLR
 from torchvision.models import resnet18
 from byol_pytorch import BYOL
 
-from utils import seed_everything, get_tinyimage_dataloader, get_cifar_100_dataloader
+from utils import seed_everything, get_tinyimage_dataloader, get_cifar_100_dataloader, clear_log_file
 
 
 def train_byol(
@@ -86,6 +86,8 @@ def train_byol(
         os.makedirs(log_directory)
     log_file_path = os.path.join(log_directory, '{}--{}--{}--{}.log'.format(epochs, lr, hidden_dim, output_dim))
     
+    clear_log_file(log_file_path)
+    
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
@@ -139,7 +141,7 @@ def train_byol(
         save_path = 'byol.pth'
         if not os.path.exists('./model'):
             os.mkdir('./model')
-        torch.save(model.state_dict(), os.path.join('./model', save_path))
+        torch.save(model.online_encoder.net.state_dict(), os.path.join('./model', save_path))
     
     # close the logger 
     logging.shutdown()
@@ -214,6 +216,8 @@ def train_resnet18(
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
     log_file_path = os.path.join(log_directory, '{}--{}--{}.log'.format(epochs, lr, batch_size))
+    
+    clear_log_file(log_file_path)
     
     logging.basicConfig(
         level=logging.INFO,
@@ -350,6 +354,8 @@ def train_linear_classifier(
     log_directory = os.path.join('./logs', 'linear_classifier')
     os.makedirs(log_directory, exist_ok=True)
     log_file_path = os.path.join(log_directory, '{}.log'.format(type))
+    
+    clear_log_file(log_file_path)
     
     logging.basicConfig(
         level=logging.INFO,

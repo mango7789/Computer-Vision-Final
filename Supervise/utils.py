@@ -196,6 +196,15 @@ def get_cifar_100_dataloader(root: str='./data', batch_size: int=64, num_workers
     return train_loader, test_loader
 
 
+def clear_log_file(log_file_path: str):
+    """
+    Check and clear the log file if it exists and is not empty
+    """
+    if os.path.exists(log_file_path):
+        if os.path.getsize(log_file_path) > 0:
+            os.remove(log_file_path)
+
+
 if __name__ == '__main__':
     get_tinyimage_dataloader()
     get_cifar_100_dataloader()

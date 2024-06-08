@@ -147,6 +147,15 @@ class CutMix:
         return bbx1, bby1, bbx2, bby2
 
 
+def clear_log_file(log_file_path: str):
+    """
+    Check and clear the log file if it exists and is not empty
+    """
+    if os.path.exists(log_file_path):
+        if os.path.getsize(log_file_path) > 0:
+            os.remove(log_file_path)
+
+
 def count_model_parameters(model: nn.Module) -> int:
     """
     Return the number of parameters in the given `model`, the model should be instantiated.
