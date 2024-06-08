@@ -1,200 +1,200 @@
-2024-06-07 22:09:17 - INFO - [Epoch  1 / 100], Training loss is 0.000093
-2024-06-07 22:09:17 - INFO - [Epoch  1 / 100], Validation loss is 4.468572, Validation accuracy is 0.057700
-2024-06-07 22:09:17 - INFO - [Epoch  2 / 100], Training loss is 0.000090
-2024-06-07 22:09:17 - INFO - [Epoch  2 / 100], Validation loss is 4.312448, Validation accuracy is 0.114600
-2024-06-07 22:09:17 - INFO - [Epoch  3 / 100], Training loss is 0.000087
-2024-06-07 22:09:17 - INFO - [Epoch  3 / 100], Validation loss is 4.141475, Validation accuracy is 0.165200
-2024-06-07 22:09:17 - INFO - [Epoch  4 / 100], Training loss is 0.000084
-2024-06-07 22:09:17 - INFO - [Epoch  4 / 100], Validation loss is 3.953364, Validation accuracy is 0.213600
-2024-06-07 22:09:17 - INFO - [Epoch  5 / 100], Training loss is 0.000080
-2024-06-07 22:09:17 - INFO - [Epoch  5 / 100], Validation loss is 3.754050, Validation accuracy is 0.254100
-2024-06-07 22:09:17 - INFO - [Epoch  6 / 100], Training loss is 0.000077
-2024-06-07 22:09:17 - INFO - [Epoch  6 / 100], Validation loss is 3.550993, Validation accuracy is 0.285800
-2024-06-07 22:09:17 - INFO - [Epoch  7 / 100], Training loss is 0.000073
-2024-06-07 22:09:17 - INFO - [Epoch  7 / 100], Validation loss is 3.354366, Validation accuracy is 0.305300
-2024-06-07 22:09:17 - INFO - [Epoch  8 / 100], Training loss is 0.000069
-2024-06-07 22:09:17 - INFO - [Epoch  8 / 100], Validation loss is 3.177477, Validation accuracy is 0.315900
-2024-06-07 22:09:17 - INFO - [Epoch  9 / 100], Training loss is 0.000066
-2024-06-07 22:09:17 - INFO - [Epoch  9 / 100], Validation loss is 3.025487, Validation accuracy is 0.330800
-2024-06-07 22:09:17 - INFO - [Epoch 10 / 100], Training loss is 0.000062
-2024-06-07 22:09:17 - INFO - [Epoch 10 / 100], Validation loss is 2.885837, Validation accuracy is 0.346300
-2024-06-07 22:09:17 - INFO - [Epoch 11 / 100], Training loss is 0.000059
-2024-06-07 22:09:17 - INFO - [Epoch 11 / 100], Validation loss is 2.755438, Validation accuracy is 0.360300
-2024-06-07 22:09:17 - INFO - [Epoch 12 / 100], Training loss is 0.000057
-2024-06-07 22:09:17 - INFO - [Epoch 12 / 100], Validation loss is 2.646759, Validation accuracy is 0.369200
-2024-06-07 22:09:17 - INFO - [Epoch 13 / 100], Training loss is 0.000054
-2024-06-07 22:09:17 - INFO - [Epoch 13 / 100], Validation loss is 2.557682, Validation accuracy is 0.376000
-2024-06-07 22:09:17 - INFO - [Epoch 14 / 100], Training loss is 0.000052
-2024-06-07 22:09:17 - INFO - [Epoch 14 / 100], Validation loss is 2.476919, Validation accuracy is 0.389600
-2024-06-07 22:09:17 - INFO - [Epoch 15 / 100], Training loss is 0.000050
-2024-06-07 22:09:17 - INFO - [Epoch 15 / 100], Validation loss is 2.410313, Validation accuracy is 0.398400
-2024-06-07 22:09:17 - INFO - [Epoch 16 / 100], Training loss is 0.000048
-2024-06-07 22:09:17 - INFO - [Epoch 16 / 100], Validation loss is 2.352267, Validation accuracy is 0.404500
-2024-06-07 22:09:17 - INFO - [Epoch 17 / 100], Training loss is 0.000046
-2024-06-07 22:09:17 - INFO - [Epoch 17 / 100], Validation loss is 2.292842, Validation accuracy is 0.416700
-2024-06-07 22:09:17 - INFO - [Epoch 18 / 100], Training loss is 0.000045
-2024-06-07 22:09:17 - INFO - [Epoch 18 / 100], Validation loss is 2.243723, Validation accuracy is 0.422600
-2024-06-07 22:09:17 - INFO - [Epoch 19 / 100], Training loss is 0.000044
-2024-06-07 22:09:17 - INFO - [Epoch 19 / 100], Validation loss is 2.204266, Validation accuracy is 0.430800
-2024-06-07 22:09:17 - INFO - [Epoch 20 / 100], Training loss is 0.000042
-2024-06-07 22:09:17 - INFO - [Epoch 20 / 100], Validation loss is 2.169872, Validation accuracy is 0.437500
-2024-06-07 22:09:17 - INFO - [Epoch 21 / 100], Training loss is 0.000041
-2024-06-07 22:09:17 - INFO - [Epoch 21 / 100], Validation loss is 2.134968, Validation accuracy is 0.443600
-2024-06-07 22:09:17 - INFO - [Epoch 22 / 100], Training loss is 0.000040
-2024-06-07 22:09:17 - INFO - [Epoch 22 / 100], Validation loss is 2.093164, Validation accuracy is 0.453400
-2024-06-07 22:09:17 - INFO - [Epoch 23 / 100], Training loss is 0.000040
-2024-06-07 22:09:17 - INFO - [Epoch 23 / 100], Validation loss is 2.071024, Validation accuracy is 0.456700
-2024-06-07 22:09:17 - INFO - [Epoch 24 / 100], Training loss is 0.000039
-2024-06-07 22:09:17 - INFO - [Epoch 24 / 100], Validation loss is 2.048678, Validation accuracy is 0.465100
-2024-06-07 22:09:17 - INFO - [Epoch 25 / 100], Training loss is 0.000038
-2024-06-07 22:09:17 - INFO - [Epoch 25 / 100], Validation loss is 2.018040, Validation accuracy is 0.471400
-2024-06-07 22:09:17 - INFO - [Epoch 26 / 100], Training loss is 0.000037
-2024-06-07 22:09:17 - INFO - [Epoch 26 / 100], Validation loss is 1.993477, Validation accuracy is 0.477400
-2024-06-07 22:09:17 - INFO - [Epoch 27 / 100], Training loss is 0.000037
-2024-06-07 22:09:17 - INFO - [Epoch 27 / 100], Validation loss is 1.972705, Validation accuracy is 0.482500
-2024-06-07 22:09:17 - INFO - [Epoch 28 / 100], Training loss is 0.000036
-2024-06-07 22:09:17 - INFO - [Epoch 28 / 100], Validation loss is 1.957429, Validation accuracy is 0.488000
-2024-06-07 22:09:17 - INFO - [Epoch 29 / 100], Training loss is 0.000036
-2024-06-07 22:09:17 - INFO - [Epoch 29 / 100], Validation loss is 1.926439, Validation accuracy is 0.492800
-2024-06-07 22:09:17 - INFO - [Epoch 30 / 100], Training loss is 0.000035
-2024-06-07 22:09:17 - INFO - [Epoch 30 / 100], Validation loss is 1.914932, Validation accuracy is 0.494300
-2024-06-07 22:09:17 - INFO - [Epoch 31 / 100], Training loss is 0.000035
-2024-06-07 22:09:17 - INFO - [Epoch 31 / 100], Validation loss is 1.894630, Validation accuracy is 0.500100
-2024-06-07 22:09:17 - INFO - [Epoch 32 / 100], Training loss is 0.000034
-2024-06-07 22:09:17 - INFO - [Epoch 32 / 100], Validation loss is 1.871737, Validation accuracy is 0.506200
-2024-06-07 22:09:17 - INFO - [Epoch 33 / 100], Training loss is 0.000034
-2024-06-07 22:09:17 - INFO - [Epoch 33 / 100], Validation loss is 1.860759, Validation accuracy is 0.505900
-2024-06-07 22:09:17 - INFO - [Epoch 34 / 100], Training loss is 0.000034
-2024-06-07 22:09:17 - INFO - [Epoch 34 / 100], Validation loss is 1.834501, Validation accuracy is 0.513000
-2024-06-07 22:09:17 - INFO - [Epoch 35 / 100], Training loss is 0.000033
-2024-06-07 22:09:17 - INFO - [Epoch 35 / 100], Validation loss is 1.825810, Validation accuracy is 0.514200
-2024-06-07 22:09:17 - INFO - [Epoch 36 / 100], Training loss is 0.000033
-2024-06-07 22:09:17 - INFO - [Epoch 36 / 100], Validation loss is 1.807774, Validation accuracy is 0.517700
-2024-06-07 22:09:17 - INFO - [Epoch 37 / 100], Training loss is 0.000032
-2024-06-07 22:09:17 - INFO - [Epoch 37 / 100], Validation loss is 1.781999, Validation accuracy is 0.521700
-2024-06-07 22:09:17 - INFO - [Epoch 38 / 100], Training loss is 0.000032
-2024-06-07 22:09:17 - INFO - [Epoch 38 / 100], Validation loss is 1.775750, Validation accuracy is 0.525200
-2024-06-07 22:09:17 - INFO - [Epoch 39 / 100], Training loss is 0.000032
-2024-06-07 22:09:17 - INFO - [Epoch 39 / 100], Validation loss is 1.758857, Validation accuracy is 0.528700
-2024-06-07 22:09:17 - INFO - [Epoch 40 / 100], Training loss is 0.000032
-2024-06-07 22:09:17 - INFO - [Epoch 40 / 100], Validation loss is 1.738609, Validation accuracy is 0.532600
-2024-06-07 22:09:17 - INFO - [Epoch 41 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 41 / 100], Validation loss is 1.736829, Validation accuracy is 0.532400
-2024-06-07 22:09:17 - INFO - [Epoch 42 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 42 / 100], Validation loss is 1.735257, Validation accuracy is 0.533200
-2024-06-07 22:09:17 - INFO - [Epoch 43 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 43 / 100], Validation loss is 1.734155, Validation accuracy is 0.533000
-2024-06-07 22:09:17 - INFO - [Epoch 44 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 44 / 100], Validation loss is 1.733359, Validation accuracy is 0.534200
-2024-06-07 22:09:17 - INFO - [Epoch 45 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 45 / 100], Validation loss is 1.732376, Validation accuracy is 0.534900
-2024-06-07 22:09:17 - INFO - [Epoch 46 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 46 / 100], Validation loss is 1.730854, Validation accuracy is 0.534700
-2024-06-07 22:09:17 - INFO - [Epoch 47 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 47 / 100], Validation loss is 1.728840, Validation accuracy is 0.535700
-2024-06-07 22:09:17 - INFO - [Epoch 48 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 48 / 100], Validation loss is 1.726592, Validation accuracy is 0.535800
-2024-06-07 22:09:17 - INFO - [Epoch 49 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 49 / 100], Validation loss is 1.724270, Validation accuracy is 0.535800
-2024-06-07 22:09:17 - INFO - [Epoch 50 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 50 / 100], Validation loss is 1.721867, Validation accuracy is 0.536200
-2024-06-07 22:09:17 - INFO - [Epoch 51 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 51 / 100], Validation loss is 1.719380, Validation accuracy is 0.536000
-2024-06-07 22:09:17 - INFO - [Epoch 52 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 52 / 100], Validation loss is 1.716938, Validation accuracy is 0.535600
-2024-06-07 22:09:17 - INFO - [Epoch 53 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 53 / 100], Validation loss is 1.714723, Validation accuracy is 0.536100
-2024-06-07 22:09:17 - INFO - [Epoch 54 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 54 / 100], Validation loss is 1.712787, Validation accuracy is 0.536900
-2024-06-07 22:09:17 - INFO - [Epoch 55 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 55 / 100], Validation loss is 1.711025, Validation accuracy is 0.537100
-2024-06-07 22:09:17 - INFO - [Epoch 56 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 56 / 100], Validation loss is 1.709281, Validation accuracy is 0.537600
-2024-06-07 22:09:17 - INFO - [Epoch 57 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 57 / 100], Validation loss is 1.707464, Validation accuracy is 0.538400
-2024-06-07 22:09:17 - INFO - [Epoch 58 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 58 / 100], Validation loss is 1.705546, Validation accuracy is 0.538800
-2024-06-07 22:09:17 - INFO - [Epoch 59 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 59 / 100], Validation loss is 1.703518, Validation accuracy is 0.538600
-2024-06-07 22:09:17 - INFO - [Epoch 60 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 60 / 100], Validation loss is 1.701370, Validation accuracy is 0.539700
-2024-06-07 22:09:17 - INFO - [Epoch 61 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 61 / 100], Validation loss is 1.699123, Validation accuracy is 0.539900
-2024-06-07 22:09:17 - INFO - [Epoch 62 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 62 / 100], Validation loss is 1.696854, Validation accuracy is 0.539900
-2024-06-07 22:09:17 - INFO - [Epoch 63 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 63 / 100], Validation loss is 1.694655, Validation accuracy is 0.540300
-2024-06-07 22:09:17 - INFO - [Epoch 64 / 100], Training loss is 0.000031
-2024-06-07 22:09:17 - INFO - [Epoch 64 / 100], Validation loss is 1.692579, Validation accuracy is 0.540800
-2024-06-07 22:09:18 - INFO - [Epoch 65 / 100], Training loss is 0.000031
-2024-06-07 22:09:18 - INFO - [Epoch 65 / 100], Validation loss is 1.690620, Validation accuracy is 0.541300
-2024-06-07 22:09:18 - INFO - [Epoch 66 / 100], Training loss is 0.000031
-2024-06-07 22:09:18 - INFO - [Epoch 66 / 100], Validation loss is 1.688733, Validation accuracy is 0.541300
-2024-06-07 22:09:18 - INFO - [Epoch 67 / 100], Training loss is 0.000031
-2024-06-07 22:09:18 - INFO - [Epoch 67 / 100], Validation loss is 1.686865, Validation accuracy is 0.541900
-2024-06-07 22:09:18 - INFO - [Epoch 68 / 100], Training loss is 0.000031
-2024-06-07 22:09:18 - INFO - [Epoch 68 / 100], Validation loss is 1.684972, Validation accuracy is 0.541700
-2024-06-07 22:09:18 - INFO - [Epoch 69 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 69 / 100], Validation loss is 1.683023, Validation accuracy is 0.542100
-2024-06-07 22:09:18 - INFO - [Epoch 70 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 70 / 100], Validation loss is 1.681016, Validation accuracy is 0.542700
-2024-06-07 22:09:18 - INFO - [Epoch 71 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 71 / 100], Validation loss is 1.678978, Validation accuracy is 0.542800
-2024-06-07 22:09:18 - INFO - [Epoch 72 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 72 / 100], Validation loss is 1.676960, Validation accuracy is 0.543400
-2024-06-07 22:09:18 - INFO - [Epoch 73 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 73 / 100], Validation loss is 1.675008, Validation accuracy is 0.543700
-2024-06-07 22:09:18 - INFO - [Epoch 74 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 74 / 100], Validation loss is 1.673143, Validation accuracy is 0.544200
-2024-06-07 22:09:18 - INFO - [Epoch 75 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 75 / 100], Validation loss is 1.671352, Validation accuracy is 0.544500
-2024-06-07 22:09:18 - INFO - [Epoch 76 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 76 / 100], Validation loss is 1.669601, Validation accuracy is 0.545100
-2024-06-07 22:09:18 - INFO - [Epoch 77 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 77 / 100], Validation loss is 1.667845, Validation accuracy is 0.545300
-2024-06-07 22:09:18 - INFO - [Epoch 78 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 78 / 100], Validation loss is 1.666052, Validation accuracy is 0.545100
-2024-06-07 22:09:18 - INFO - [Epoch 79 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 79 / 100], Validation loss is 1.664208, Validation accuracy is 0.545800
-2024-06-07 22:09:18 - INFO - [Epoch 80 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 80 / 100], Validation loss is 1.662331, Validation accuracy is 0.546100
-2024-06-07 22:09:18 - INFO - [Epoch 81 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 81 / 100], Validation loss is 1.662144, Validation accuracy is 0.546100
-2024-06-07 22:09:18 - INFO - [Epoch 82 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 82 / 100], Validation loss is 1.661956, Validation accuracy is 0.546200
-2024-06-07 22:09:18 - INFO - [Epoch 83 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 83 / 100], Validation loss is 1.661770, Validation accuracy is 0.546300
-2024-06-07 22:09:18 - INFO - [Epoch 84 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 84 / 100], Validation loss is 1.661585, Validation accuracy is 0.546300
-2024-06-07 22:09:18 - INFO - [Epoch 85 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 85 / 100], Validation loss is 1.661401, Validation accuracy is 0.546300
-2024-06-07 22:09:18 - INFO - [Epoch 86 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 86 / 100], Validation loss is 1.661220, Validation accuracy is 0.546200
-2024-06-07 22:09:18 - INFO - [Epoch 87 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 87 / 100], Validation loss is 1.661041, Validation accuracy is 0.546200
-2024-06-07 22:09:18 - INFO - [Epoch 88 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 88 / 100], Validation loss is 1.660865, Validation accuracy is 0.546200
-2024-06-07 22:09:18 - INFO - [Epoch 89 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 89 / 100], Validation loss is 1.660692, Validation accuracy is 0.546100
-2024-06-07 22:09:18 - INFO - [Epoch 90 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 90 / 100], Validation loss is 1.660521, Validation accuracy is 0.546100
-2024-06-07 22:09:18 - INFO - [Epoch 91 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 91 / 100], Validation loss is 1.660352, Validation accuracy is 0.546100
-2024-06-07 22:09:18 - INFO - [Epoch 92 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 92 / 100], Validation loss is 1.660186, Validation accuracy is 0.546100
-2024-06-07 22:09:18 - INFO - [Epoch 93 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 93 / 100], Validation loss is 1.660021, Validation accuracy is 0.546100
-2024-06-07 22:09:18 - INFO - [Epoch 94 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 94 / 100], Validation loss is 1.659857, Validation accuracy is 0.546200
-2024-06-07 22:09:18 - INFO - [Epoch 95 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 95 / 100], Validation loss is 1.659695, Validation accuracy is 0.546300
-2024-06-07 22:09:18 - INFO - [Epoch 96 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 96 / 100], Validation loss is 1.659532, Validation accuracy is 0.546200
-2024-06-07 22:09:18 - INFO - [Epoch 97 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 97 / 100], Validation loss is 1.659370, Validation accuracy is 0.546300
-2024-06-07 22:09:18 - INFO - [Epoch 98 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 98 / 100], Validation loss is 1.659207, Validation accuracy is 0.546400
-2024-06-07 22:09:18 - INFO - [Epoch 99 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 99 / 100], Validation loss is 1.659043, Validation accuracy is 0.546500
-2024-06-07 22:09:18 - INFO - [Epoch 100 / 100], Training loss is 0.000030
-2024-06-07 22:09:18 - INFO - [Epoch 100 / 100], Validation loss is 1.658878, Validation accuracy is 0.546600
+2024-06-08 21:46:28 - INFO - [Epoch  1 / 100], Training loss is 0.000093
+2024-06-08 21:46:28 - INFO - [Epoch  1 / 100], Validation loss is 4.458413, Validation accuracy is 0.068200
+2024-06-08 21:46:28 - INFO - [Epoch  2 / 100], Training loss is 0.000089
+2024-06-08 21:46:28 - INFO - [Epoch  2 / 100], Validation loss is 4.301067, Validation accuracy is 0.134300
+2024-06-08 21:46:28 - INFO - [Epoch  3 / 100], Training loss is 0.000087
+2024-06-08 21:46:28 - INFO - [Epoch  3 / 100], Validation loss is 4.121747, Validation accuracy is 0.191300
+2024-06-08 21:46:28 - INFO - [Epoch  4 / 100], Training loss is 0.000083
+2024-06-08 21:46:28 - INFO - [Epoch  4 / 100], Validation loss is 3.926966, Validation accuracy is 0.234400
+2024-06-08 21:46:28 - INFO - [Epoch  5 / 100], Training loss is 0.000080
+2024-06-08 21:46:28 - INFO - [Epoch  5 / 100], Validation loss is 3.724347, Validation accuracy is 0.268100
+2024-06-08 21:46:28 - INFO - [Epoch  6 / 100], Training loss is 0.000076
+2024-06-08 21:46:28 - INFO - [Epoch  6 / 100], Validation loss is 3.518316, Validation accuracy is 0.294300
+2024-06-08 21:46:28 - INFO - [Epoch  7 / 100], Training loss is 0.000073
+2024-06-08 21:46:28 - INFO - [Epoch  7 / 100], Validation loss is 3.322750, Validation accuracy is 0.309700
+2024-06-08 21:46:28 - INFO - [Epoch  8 / 100], Training loss is 0.000069
+2024-06-08 21:46:28 - INFO - [Epoch  8 / 100], Validation loss is 3.148065, Validation accuracy is 0.318400
+2024-06-08 21:46:28 - INFO - [Epoch  9 / 100], Training loss is 0.000065
+2024-06-08 21:46:28 - INFO - [Epoch  9 / 100], Validation loss is 2.988405, Validation accuracy is 0.332700
+2024-06-08 21:46:28 - INFO - [Epoch 10 / 100], Training loss is 0.000062
+2024-06-08 21:46:28 - INFO - [Epoch 10 / 100], Validation loss is 2.846360, Validation accuracy is 0.346600
+2024-06-08 21:46:28 - INFO - [Epoch 11 / 100], Training loss is 0.000059
+2024-06-08 21:46:28 - INFO - [Epoch 11 / 100], Validation loss is 2.725710, Validation accuracy is 0.355600
+2024-06-08 21:46:28 - INFO - [Epoch 12 / 100], Training loss is 0.000056
+2024-06-08 21:46:28 - INFO - [Epoch 12 / 100], Validation loss is 2.620585, Validation accuracy is 0.363300
+2024-06-08 21:46:28 - INFO - [Epoch 13 / 100], Training loss is 0.000054
+2024-06-08 21:46:28 - INFO - [Epoch 13 / 100], Validation loss is 2.528328, Validation accuracy is 0.373300
+2024-06-08 21:46:28 - INFO - [Epoch 14 / 100], Training loss is 0.000052
+2024-06-08 21:46:28 - INFO - [Epoch 14 / 100], Validation loss is 2.450682, Validation accuracy is 0.383400
+2024-06-08 21:46:28 - INFO - [Epoch 15 / 100], Training loss is 0.000050
+2024-06-08 21:46:28 - INFO - [Epoch 15 / 100], Validation loss is 2.394073, Validation accuracy is 0.391700
+2024-06-08 21:46:28 - INFO - [Epoch 16 / 100], Training loss is 0.000048
+2024-06-08 21:46:28 - INFO - [Epoch 16 / 100], Validation loss is 2.336368, Validation accuracy is 0.402800
+2024-06-08 21:46:28 - INFO - [Epoch 17 / 100], Training loss is 0.000046
+2024-06-08 21:46:28 - INFO - [Epoch 17 / 100], Validation loss is 2.277953, Validation accuracy is 0.410400
+2024-06-08 21:46:28 - INFO - [Epoch 18 / 100], Training loss is 0.000045
+2024-06-08 21:46:28 - INFO - [Epoch 18 / 100], Validation loss is 2.223280, Validation accuracy is 0.423300
+2024-06-08 21:46:28 - INFO - [Epoch 19 / 100], Training loss is 0.000044
+2024-06-08 21:46:28 - INFO - [Epoch 19 / 100], Validation loss is 2.192913, Validation accuracy is 0.430000
+2024-06-08 21:46:28 - INFO - [Epoch 20 / 100], Training loss is 0.000042
+2024-06-08 21:46:28 - INFO - [Epoch 20 / 100], Validation loss is 2.169279, Validation accuracy is 0.435100
+2024-06-08 21:46:28 - INFO - [Epoch 21 / 100], Training loss is 0.000041
+2024-06-08 21:46:28 - INFO - [Epoch 21 / 100], Validation loss is 2.121940, Validation accuracy is 0.446000
+2024-06-08 21:46:28 - INFO - [Epoch 22 / 100], Training loss is 0.000041
+2024-06-08 21:46:28 - INFO - [Epoch 22 / 100], Validation loss is 2.083390, Validation accuracy is 0.453100
+2024-06-08 21:46:28 - INFO - [Epoch 23 / 100], Training loss is 0.000040
+2024-06-08 21:46:28 - INFO - [Epoch 23 / 100], Validation loss is 2.053060, Validation accuracy is 0.460600
+2024-06-08 21:46:28 - INFO - [Epoch 24 / 100], Training loss is 0.000039
+2024-06-08 21:46:28 - INFO - [Epoch 24 / 100], Validation loss is 2.036462, Validation accuracy is 0.464200
+2024-06-08 21:46:28 - INFO - [Epoch 25 / 100], Training loss is 0.000038
+2024-06-08 21:46:28 - INFO - [Epoch 25 / 100], Validation loss is 2.010813, Validation accuracy is 0.469800
+2024-06-08 21:46:28 - INFO - [Epoch 26 / 100], Training loss is 0.000038
+2024-06-08 21:46:28 - INFO - [Epoch 26 / 100], Validation loss is 1.977232, Validation accuracy is 0.475500
+2024-06-08 21:46:28 - INFO - [Epoch 27 / 100], Training loss is 0.000037
+2024-06-08 21:46:28 - INFO - [Epoch 27 / 100], Validation loss is 1.949922, Validation accuracy is 0.482000
+2024-06-08 21:46:28 - INFO - [Epoch 28 / 100], Training loss is 0.000036
+2024-06-08 21:46:28 - INFO - [Epoch 28 / 100], Validation loss is 1.932896, Validation accuracy is 0.487600
+2024-06-08 21:46:28 - INFO - [Epoch 29 / 100], Training loss is 0.000036
+2024-06-08 21:46:28 - INFO - [Epoch 29 / 100], Validation loss is 1.912883, Validation accuracy is 0.493300
+2024-06-08 21:46:28 - INFO - [Epoch 30 / 100], Training loss is 0.000035
+2024-06-08 21:46:28 - INFO - [Epoch 30 / 100], Validation loss is 1.881991, Validation accuracy is 0.499500
+2024-06-08 21:46:28 - INFO - [Epoch 31 / 100], Training loss is 0.000035
+2024-06-08 21:46:28 - INFO - [Epoch 31 / 100], Validation loss is 1.869425, Validation accuracy is 0.500600
+2024-06-08 21:46:28 - INFO - [Epoch 32 / 100], Training loss is 0.000034
+2024-06-08 21:46:28 - INFO - [Epoch 32 / 100], Validation loss is 1.846352, Validation accuracy is 0.508400
+2024-06-08 21:46:28 - INFO - [Epoch 33 / 100], Training loss is 0.000034
+2024-06-08 21:46:28 - INFO - [Epoch 33 / 100], Validation loss is 1.826867, Validation accuracy is 0.512600
+2024-06-08 21:46:29 - INFO - [Epoch 34 / 100], Training loss is 0.000034
+2024-06-08 21:46:29 - INFO - [Epoch 34 / 100], Validation loss is 1.804630, Validation accuracy is 0.518800
+2024-06-08 21:46:29 - INFO - [Epoch 35 / 100], Training loss is 0.000033
+2024-06-08 21:46:29 - INFO - [Epoch 35 / 100], Validation loss is 1.790910, Validation accuracy is 0.520300
+2024-06-08 21:46:29 - INFO - [Epoch 36 / 100], Training loss is 0.000033
+2024-06-08 21:46:29 - INFO - [Epoch 36 / 100], Validation loss is 1.776432, Validation accuracy is 0.524300
+2024-06-08 21:46:29 - INFO - [Epoch 37 / 100], Training loss is 0.000033
+2024-06-08 21:46:29 - INFO - [Epoch 37 / 100], Validation loss is 1.754346, Validation accuracy is 0.528800
+2024-06-08 21:46:29 - INFO - [Epoch 38 / 100], Training loss is 0.000032
+2024-06-08 21:46:29 - INFO - [Epoch 38 / 100], Validation loss is 1.734935, Validation accuracy is 0.534300
+2024-06-08 21:46:29 - INFO - [Epoch 39 / 100], Training loss is 0.000032
+2024-06-08 21:46:29 - INFO - [Epoch 39 / 100], Validation loss is 1.723465, Validation accuracy is 0.534000
+2024-06-08 21:46:29 - INFO - [Epoch 40 / 100], Training loss is 0.000032
+2024-06-08 21:46:29 - INFO - [Epoch 40 / 100], Validation loss is 1.706502, Validation accuracy is 0.537400
+2024-06-08 21:46:29 - INFO - [Epoch 41 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 41 / 100], Validation loss is 1.704731, Validation accuracy is 0.538100
+2024-06-08 21:46:29 - INFO - [Epoch 42 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 42 / 100], Validation loss is 1.702867, Validation accuracy is 0.539600
+2024-06-08 21:46:29 - INFO - [Epoch 43 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 43 / 100], Validation loss is 1.701164, Validation accuracy is 0.539200
+2024-06-08 21:46:29 - INFO - [Epoch 44 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 44 / 100], Validation loss is 1.699511, Validation accuracy is 0.539700
+2024-06-08 21:46:29 - INFO - [Epoch 45 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 45 / 100], Validation loss is 1.697539, Validation accuracy is 0.539000
+2024-06-08 21:46:29 - INFO - [Epoch 46 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 46 / 100], Validation loss is 1.695077, Validation accuracy is 0.539500
+2024-06-08 21:46:29 - INFO - [Epoch 47 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 47 / 100], Validation loss is 1.692364, Validation accuracy is 0.539800
+2024-06-08 21:46:29 - INFO - [Epoch 48 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 48 / 100], Validation loss is 1.689827, Validation accuracy is 0.540700
+2024-06-08 21:46:29 - INFO - [Epoch 49 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 49 / 100], Validation loss is 1.687729, Validation accuracy is 0.541200
+2024-06-08 21:46:29 - INFO - [Epoch 50 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 50 / 100], Validation loss is 1.686043, Validation accuracy is 0.541300
+2024-06-08 21:46:29 - INFO - [Epoch 51 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 51 / 100], Validation loss is 1.684593, Validation accuracy is 0.541700
+2024-06-08 21:46:29 - INFO - [Epoch 52 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 52 / 100], Validation loss is 1.683218, Validation accuracy is 0.542400
+2024-06-08 21:46:29 - INFO - [Epoch 53 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 53 / 100], Validation loss is 1.681787, Validation accuracy is 0.542800
+2024-06-08 21:46:29 - INFO - [Epoch 54 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 54 / 100], Validation loss is 1.680144, Validation accuracy is 0.543000
+2024-06-08 21:46:29 - INFO - [Epoch 55 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 55 / 100], Validation loss is 1.678153, Validation accuracy is 0.543900
+2024-06-08 21:46:29 - INFO - [Epoch 56 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 56 / 100], Validation loss is 1.675798, Validation accuracy is 0.543900
+2024-06-08 21:46:29 - INFO - [Epoch 57 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 57 / 100], Validation loss is 1.673224, Validation accuracy is 0.544100
+2024-06-08 21:46:29 - INFO - [Epoch 58 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 58 / 100], Validation loss is 1.670664, Validation accuracy is 0.545500
+2024-06-08 21:46:29 - INFO - [Epoch 59 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 59 / 100], Validation loss is 1.668313, Validation accuracy is 0.546500
+2024-06-08 21:46:29 - INFO - [Epoch 60 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 60 / 100], Validation loss is 1.666251, Validation accuracy is 0.547200
+2024-06-08 21:46:29 - INFO - [Epoch 61 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 61 / 100], Validation loss is 1.664444, Validation accuracy is 0.547100
+2024-06-08 21:46:29 - INFO - [Epoch 62 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 62 / 100], Validation loss is 1.662772, Validation accuracy is 0.547700
+2024-06-08 21:46:29 - INFO - [Epoch 63 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 63 / 100], Validation loss is 1.661089, Validation accuracy is 0.548100
+2024-06-08 21:46:29 - INFO - [Epoch 64 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 64 / 100], Validation loss is 1.659264, Validation accuracy is 0.548000
+2024-06-08 21:46:29 - INFO - [Epoch 65 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 65 / 100], Validation loss is 1.657237, Validation accuracy is 0.548500
+2024-06-08 21:46:29 - INFO - [Epoch 66 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 66 / 100], Validation loss is 1.655033, Validation accuracy is 0.549000
+2024-06-08 21:46:29 - INFO - [Epoch 67 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 67 / 100], Validation loss is 1.652750, Validation accuracy is 0.549300
+2024-06-08 21:46:29 - INFO - [Epoch 68 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 68 / 100], Validation loss is 1.650517, Validation accuracy is 0.549700
+2024-06-08 21:46:29 - INFO - [Epoch 69 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 69 / 100], Validation loss is 1.648438, Validation accuracy is 0.550100
+2024-06-08 21:46:29 - INFO - [Epoch 70 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 70 / 100], Validation loss is 1.646562, Validation accuracy is 0.550600
+2024-06-08 21:46:29 - INFO - [Epoch 71 / 100], Training loss is 0.000031
+2024-06-08 21:46:29 - INFO - [Epoch 71 / 100], Validation loss is 1.644862, Validation accuracy is 0.551100
+2024-06-08 21:46:29 - INFO - [Epoch 72 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 72 / 100], Validation loss is 1.643255, Validation accuracy is 0.551100
+2024-06-08 21:46:29 - INFO - [Epoch 73 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 73 / 100], Validation loss is 1.641634, Validation accuracy is 0.551700
+2024-06-08 21:46:29 - INFO - [Epoch 74 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 74 / 100], Validation loss is 1.639913, Validation accuracy is 0.551800
+2024-06-08 21:46:29 - INFO - [Epoch 75 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 75 / 100], Validation loss is 1.638055, Validation accuracy is 0.552200
+2024-06-08 21:46:29 - INFO - [Epoch 76 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 76 / 100], Validation loss is 1.636072, Validation accuracy is 0.552100
+2024-06-08 21:46:29 - INFO - [Epoch 77 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 77 / 100], Validation loss is 1.634019, Validation accuracy is 0.552900
+2024-06-08 21:46:29 - INFO - [Epoch 78 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 78 / 100], Validation loss is 1.631969, Validation accuracy is 0.553600
+2024-06-08 21:46:29 - INFO - [Epoch 79 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 79 / 100], Validation loss is 1.629993, Validation accuracy is 0.553800
+2024-06-08 21:46:29 - INFO - [Epoch 80 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 80 / 100], Validation loss is 1.628134, Validation accuracy is 0.554100
+2024-06-08 21:46:29 - INFO - [Epoch 81 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 81 / 100], Validation loss is 1.627960, Validation accuracy is 0.554100
+2024-06-08 21:46:29 - INFO - [Epoch 82 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 82 / 100], Validation loss is 1.627796, Validation accuracy is 0.554100
+2024-06-08 21:46:29 - INFO - [Epoch 83 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 83 / 100], Validation loss is 1.627642, Validation accuracy is 0.554300
+2024-06-08 21:46:29 - INFO - [Epoch 84 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 84 / 100], Validation loss is 1.627495, Validation accuracy is 0.554300
+2024-06-08 21:46:29 - INFO - [Epoch 85 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 85 / 100], Validation loss is 1.627355, Validation accuracy is 0.554300
+2024-06-08 21:46:29 - INFO - [Epoch 86 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 86 / 100], Validation loss is 1.627219, Validation accuracy is 0.554400
+2024-06-08 21:46:29 - INFO - [Epoch 87 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 87 / 100], Validation loss is 1.627086, Validation accuracy is 0.554400
+2024-06-08 21:46:29 - INFO - [Epoch 88 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 88 / 100], Validation loss is 1.626955, Validation accuracy is 0.554500
+2024-06-08 21:46:29 - INFO - [Epoch 89 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 89 / 100], Validation loss is 1.626825, Validation accuracy is 0.554600
+2024-06-08 21:46:29 - INFO - [Epoch 90 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 90 / 100], Validation loss is 1.626694, Validation accuracy is 0.554600
+2024-06-08 21:46:29 - INFO - [Epoch 91 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 91 / 100], Validation loss is 1.626560, Validation accuracy is 0.554600
+2024-06-08 21:46:29 - INFO - [Epoch 92 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 92 / 100], Validation loss is 1.626424, Validation accuracy is 0.554600
+2024-06-08 21:46:29 - INFO - [Epoch 93 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 93 / 100], Validation loss is 1.626283, Validation accuracy is 0.554500
+2024-06-08 21:46:29 - INFO - [Epoch 94 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 94 / 100], Validation loss is 1.626138, Validation accuracy is 0.554400
+2024-06-08 21:46:29 - INFO - [Epoch 95 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 95 / 100], Validation loss is 1.625989, Validation accuracy is 0.554400
+2024-06-08 21:46:29 - INFO - [Epoch 96 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 96 / 100], Validation loss is 1.625834, Validation accuracy is 0.554400
+2024-06-08 21:46:29 - INFO - [Epoch 97 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 97 / 100], Validation loss is 1.625675, Validation accuracy is 0.554400
+2024-06-08 21:46:29 - INFO - [Epoch 98 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 98 / 100], Validation loss is 1.625510, Validation accuracy is 0.554400
+2024-06-08 21:46:29 - INFO - [Epoch 99 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 99 / 100], Validation loss is 1.625340, Validation accuracy is 0.554400
+2024-06-08 21:46:29 - INFO - [Epoch 100 / 100], Training loss is 0.000030
+2024-06-08 21:46:29 - INFO - [Epoch 100 / 100], Validation loss is 1.625167, Validation accuracy is 0.554500
