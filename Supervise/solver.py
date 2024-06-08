@@ -135,7 +135,6 @@ def train_byol(
         logger.info("[Epoch {:>2} / {:>2}], Training loss is {:>8.6f}".format(epoch + 1, epochs, training_loss))
         
 
-    
     # save the trained byol model
     if save:
         save_path = 'byol.pth'
