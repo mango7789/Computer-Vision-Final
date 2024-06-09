@@ -59,7 +59,7 @@
 - https://github.com/mango7789/Computer-Vision-Final/tree/main/CIFAR-100
 
 #### 报告链接
-- https://cn.overleaf.com/project/665d8aeb625559847b1489fd
+- https://github.com/mango7789/Computer-Vision-Final/blob/main/CIFAR-100/report/CIFAR100.pdf
 
 ---
 
