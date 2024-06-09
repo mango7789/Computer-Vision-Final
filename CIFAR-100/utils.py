@@ -164,3 +164,9 @@ def count_model_parameters(model: nn.Module) -> int:
     - model: The instantiated model.
     """
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+if __name__ == '__main__':
+    cnn = get_cnn_model()
+    vit = get_vit_model()
+    print(count_model_parameters(cnn))
+    print(count_model_parameters(vit))
