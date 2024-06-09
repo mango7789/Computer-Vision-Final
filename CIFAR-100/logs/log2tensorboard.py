@@ -2,7 +2,7 @@ import re
 from torch.utils.tensorboard import SummaryWriter
 from typing import Tuple, List
 
-def convert(file_paths: Tuple[str, str], tensorboard_path: str):
+def convert(file_paths: Tuple[str, str], model_type: str):
     """
     Extract the loss and accuracy from two log files and write them into TensorBoard.
     """
@@ -10,7 +10,6 @@ def convert(file_paths: Tuple[str, str], tensorboard_path: str):
     no_cutmix_path, with_cutmix_path = file_paths
 
     # initialize TensorBoard SummaryWriter
-    writer = SummaryWriter(log_dir=tensorboard_path)
 
     # regular expressions to match the relevant log lines
     train_loss_pattern = re.compile(r'Training loss is (\d+\.\d+)')
@@ -50,21 +49,19 @@ def convert(file_paths: Tuple[str, str], tensorboard_path: str):
     # write them to tensorboard
     for i in range(len(no_train_loss)):
         writer.add_scalars('Loss', {
-            '/No_CutMix/Train_Loss': no_train_loss[i],
-            '/No_CutMix/Test_Loss': no_test_loss[i],
-            '/With_CutMix/Train_Loss': with_train_loss[i],
-            '/With_CutMix/Test_Loss': with_test_loss[i],
+            f'{model_type}/No_CutMix/Train_Loss': no_train_loss[i],
+            f'{model_type}/No_CutMix/Test_Loss': no_test_loss[i],
+            f'{model_type}/With_CutMix/Train_Loss': with_train_loss[i],
+            f'{model_type}/With_CutMix/Test_Loss': with_test_loss[i],
         }, i + 1)
         
         writer.add_scalars('Accuracy', {
-            '/No_CutMix/Top1_Acc': no_top1_acc[i],
-            '/No_CutMix/Top5_Acc': no_top5_acc[i],
-            '/With_CutMix/Top1_Acc': with_top1_acc[i],
-            '/With_CutMix/Top5_Acc': with_top5_acc[i],
+            f'{model_type}/No_CutMix/Top1_Acc': no_top1_acc[i],
+            f'{model_type}/No_CutMix/Top5_Acc': no_top5_acc[i],
+            f'{model_type}/With_CutMix/Top1_Acc': with_top1_acc[i],
+            f'{model_type}/With_CutMix/Top5_Acc': with_top5_acc[i],
         }, i + 1)
 
-    # close the TensorBoard SummaryWriter
-    writer.close()
     
     
 if __name__ == '__main__':
@@ -73,11 +70,11 @@ if __name__ == '__main__':
         ('./CNN/15--0.0005--0.01--64--0.log', './CNN/15--0.0005--0.01--64--1.log'),
         ('./ViT/15--0.0005--0.01--64--0.log', './ViT/15--0.0005--0.01--64--1.log')
     ]
+    
+    model_types = ['CNN', 'ViT']
 
-    board_paths = [
-        './tensorboard/CNN',
-        './tensorboard/ViT'
-    ]
-
-    for file_path, board_path in zip(file_paths, board_paths):
-        convert(file_path, board_path)
+    writer = SummaryWriter(log_dir='./tensorboard')
+    for file_path, model_type in zip(file_paths, model_types):
+        convert(file_path, model_type)
+        
+    writer.close()

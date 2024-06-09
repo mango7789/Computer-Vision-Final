@@ -19,5 +19,5 @@ if __name__ == '__main__':
     
     test_with_model(
         data_root=args.root,
-        path=os.path.join('./model', args.path)
+        path=args.path
     )
