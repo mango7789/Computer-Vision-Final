@@ -11,7 +11,7 @@ from torch.optim.lr_scheduler import MultiStepLR
 from torchvision.models import resnet18
 from byol_pytorch import BYOL
 
-from utils import seed_everything, get_tinyimage_dataloader, get_cifar_100_dataloader, clear_log_file
+from utils import seed_everything, get_cifar_10_dataloader, get_tinyimage_dataloader, get_cifar_100_dataloader, clear_log_file
 
 
 def train_byol(
@@ -60,7 +60,7 @@ def train_byol(
     seed_everything(seed)
     
     # get the dataloader
-    train_loader = get_tinyimage_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
+    train_loader = get_cifar_10_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
     
     # get the device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -79,7 +79,7 @@ def train_byol(
     
     # define optimizer and scheduler
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
-    scheduler = MultiStepLR(optimizer, milestones=[6, 8], gamma=0.1)
+    scheduler = MultiStepLR(optimizer, milestones=[int(epochs * 0.6), int(epochs * 0.8)], gamma=0.1)
     
     # set the configuration for the logger
     log_directory = os.path.join(output_dir, 'BYOL')
@@ -141,12 +141,12 @@ def train_byol(
         save_path = 'byol.pth'
         if not os.path.exists('./model'):
             os.mkdir('./model')
-        torch.save(model.online_encoder.net.state_dict(), os.path.join('./model', save_path))
+        torch.save(base_encoder.state_dict(), os.path.join('./model', save_path))
     
     # close the logger 
     logging.shutdown()
     
-    return model.online_encoder.net
+    return base_encoder
 
 
 def fetch_resnet18() -> resnet18:

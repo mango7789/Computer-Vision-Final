@@ -27,7 +27,24 @@ def seed_everything(seed: int=None):
 
 # TODO: add a dataloader for CIFAR-10, since we need to find the impact from the 
 #       scale(size) of dataset.
+def get_cifar_10_dataloader(root: str='./data', batch_size: int=64, num_workers: int=2) -> DataLoader:
+    """
+    Get the train dataloader of the CIFAR-10 dataset.
+    """
     
+    # transform the training image to tensor
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+    ])
+    
+    # if the dataset doesn't exist in local, download it automatically
+    download = (not os.path.exists(root)) or ('cifar-10-batches-py' not in os.listdir(root))
+    
+    # get the training and testing dataloader
+    train_set = torchvision.datasets.CIFAR10(root=root, train=True, download=download, transform=transform)
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers)
+    
+    return train_loader
 
 class TinyImageNetDataset(Dataset):
     """
@@ -144,8 +161,6 @@ def get_tinyimage_dataloader(root: str='./data', batch_size: int=64, num_workers
     
     # define data augmentation and normalization for training dataset
     transform = transforms.Compose([
-        transforms.RandomResizedCrop(224),
-        transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
     ])
     
@@ -206,5 +221,6 @@ def clear_log_file(log_file_path: str):
 
 
 if __name__ == '__main__':
+    get_cifar_10_dataloader()
     get_tinyimage_dataloader()
     get_cifar_100_dataloader()
