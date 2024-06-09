@@ -354,11 +354,10 @@ def test_with_model(data_root: str, path: str):
         
         file_path = f"./logs/{nn_name.lower()}-accuracy.txt"
 
-        # clear the content in the file if it exists
-        if os.path.exists(file_path):
-            open(file_path, 'w').close()
+        clear_log_file(file_path)
         
         with open(file_path, "w") as file:
+            # each label
             for label in sorted(class_samples.keys()):
                 accuracy_top1 = class_correct_top1[label] / class_samples[label]
                 accuracy_top5 = class_correct_top5[label] / class_samples[label]
@@ -369,10 +368,11 @@ def test_with_model(data_root: str, path: str):
                     cifar100_classes[label], accuracy_top1, accuracy_top5
                 ))
 
+            # total accuracy
             total_accuracy_top1 = total_correct_top1 / total_samples
             total_accuracy_top5 = total_correct_top5 / total_samples
 
-            file.write("=" * 120 + "\n")
+            file.write("=" * 121 + "\n")
             file.write("For the best model on the CIFAR-100 dataset, Total Top-1 accuracy is {:>8.6f}, Total Top-5 accuracy is {:>8.6f}\n".format(
                 total_accuracy_top1, total_accuracy_top5
             ))

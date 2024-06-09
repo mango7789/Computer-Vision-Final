@@ -8,9 +8,9 @@ common:
 
 train:
   byol:
-    epochs: 10
-    lr: 0.001
-    hidden_dim: 2048
+    epochs: 40
+    lr: 0.003
+    hidden_dim: 4096
     output_dim: 256
     update_rate: 0.99
     weight_decay: 0.0001

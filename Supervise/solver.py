@@ -6,6 +6,7 @@ from typing import Tuple, Literal
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import MultiStepLR
 from torchvision.models import resnet18
@@ -15,8 +16,8 @@ from utils import seed_everything, get_cifar_10_dataloader, get_tinyimage_datalo
 
 
 def train_byol(
-        epochs: int=10,
-        lr: float=0.001,
+        epochs: int=40,
+        lr: float=0.003,
         hidden_dim: int=4096,
         output_dim: int=256,
         update_rate: float=0.99,
@@ -28,7 +29,7 @@ def train_byol(
     the trained online encoder.
     
     Args:
-    - epochs: The number of training epochs, default is 10.
+    - epochs: The number of training epochs, default is 40.
     - lr: The learning rate of the optimizer, default is 0.003.
     - hidden_dim: The dimension of the projection space, default is 4096.
     - output_dim: The dimension of the prediction space, default is 256.
@@ -79,7 +80,7 @@ def train_byol(
     
     # define optimizer and scheduler
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
-    scheduler = MultiStepLR(optimizer, milestones=[int(epochs * 0.6), int(epochs * 0.8)], gamma=0.1)
+    scheduler = MultiStepLR(optimizer, milestones=[int(epochs * 0.5), int(epochs * 0.75)], gamma=0.1)
     
     # set the configuration for the logger
     log_directory = os.path.join(output_dir, 'BYOL')
@@ -300,6 +301,9 @@ def extract_features(encoder: nn.Module, data_loader: DataLoader) -> Tuple[torch
 
 
 class MLPClassifier(nn.Module):
+    """
+    Multi-Layper Perceptron. Used for classifying the features extracted (learned) from the encoder.
+    """
     def __init__(self, input_dim: int, num_classes: int=100):
         super(MLPClassifier, self).__init__()
         self.fc1 = nn.Linear(input_dim, 512)
@@ -310,8 +314,8 @@ class MLPClassifier(nn.Module):
         self.dropout = nn.Dropout(0.5)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.dropout(nn.ReLU(self.bn1(self.fc1(x))))
-        x = self.dropout(nn.ReLU(self.bn2(self.fc2(x))))
+        x = self.dropout(F.relu(self.bn1(self.fc1(x))))
+        x = self.dropout(F.relu(self.bn2(self.fc2(x))))
         x = self.fc3(x)
         return x    
 
@@ -416,3 +420,111 @@ def train_linear_classifier(
     logging.shutdown()        
             
     return best_accuracy
+
+
+def test_trained_model(encoder_path: str, classifier_path: str):
+    """
+    Load and test the trained encoder and linear classifier on the testing
+    dataset of CIFAR-100.
+    
+    Args:
+    - encoder_path: The file path of the learned parameters of encoder model.
+    - classifier_path: The file path of the learned parameters of linear classifier.
+    """
+    # device
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    
+    # load the encoder
+    encoder = resnet18(weight=None)
+    encoder.fc = nn.Identity()
+    encoder.load_state_dict(torch.load(encoder_path, map_location=device))
+    encoder.to(device)
+    encoder.eval()
+    
+    # load the linear classifier
+    classifier = MLPClassifier(512)
+    classifier.load_state_dict(torch.load(classifier_path, map_location=device))
+    classifier.to(device)
+    classifier.eval()
+    
+    # labels of CIFAR-100
+    cifar100_classes = [
+        "beaver", "dolphin", "otter", "seal", "whale",
+        "aquarium fish", "flatfish", "ray", "shark", "trout",
+        "orchids", "poppies", "roses", "sunflowers", "tulips",
+        "bottles", "bowls", "cans", "cups", "plates",
+        "apples", "mushrooms", "oranges", "pears", "sweet peppers",
+        "clock", "computer keyboard", "lamp", "telephone", "television",
+        "bed", "chair", "couch", "table", "wardrobe",
+        "bee", "beetle", "butterfly", "caterpillar", "cockroach",
+        "bear", "leopard", "lion", "tiger", "wolf",
+        "bridge", "castle", "house", "road", "skyscraper",
+        "cloud", "forest", "mountain", "plain", "sea",
+        "camel", "cattle", "chimpanzee", "elephant", "kangaroo",
+        "fox", "porcupine", "possum", "raccoon", "skunk",
+        "crab", "lobster", "snail", "spider", "worm",
+        "baby", "boy", "girl", "man", "woman",
+        "crocodile", "dinosaur", "lizard", "snake", "turtle",
+        "hamster", "mouse", "rabbit", "shrew", "squirrel",
+        "maple", "oak", "palm", "pine", "willow",
+        "bicycle", "bus", "motorcycle", "pickup truck", "train",
+        "lawn-mower", "rocket", "streetcar", "tank", "tractor"
+    ]
+    
+    # test on the testing dataset
+    _, test_loader = get_cifar_100_dataloader()
+    
+    correct = 0
+    total = 0
+    correct_per_class = [0] * 100
+    total_per_class = [0] * 100
+    
+    # test the model
+    with torch.no_grad():
+        for data in test_loader:
+            images, labels = data
+            images, labels = images.to(device), labels.to(device)
+            
+            features = encoder(images)
+            outputs = classifier(features)
+            
+            # calculate predictions
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+            
+            for label, prediction in zip(labels, predicted):
+                total_per_class[label] += 1
+                if prediction == label:
+                    correct_per_class[label] += 1
+                    
+    file_path = f"./logs/{encoder_path.split('/')[-1].split('.')[0]}-accuracy.txt"
+
+    # clear the content in the file if it exists
+    clear_log_file(file_path)
+    
+    # print the result on console and save them in .txt file
+    with open(file_path, "w") as file:
+        # each label
+        for i in range(len(cifar100_classes)):
+            accuracy = correct_per_class[i] / total_per_class[i]
+            file.write("For class {:^30} on the CIFAR-100 dataset, Testing accuracy is {:>8.6f}\n".format(
+                cifar100_classes[i], accuracy
+            ))
+            print("For class {:^30} on the CIFAR-100 dataset, Testing accuracy is {:>8.6f}".format(
+                cifar100_classes[i], accuracy
+            ))
+            
+        # total accuracy
+        total_accuracy = correct / total
+
+        file.write("=" * 121 + "\n")
+        file.write("For the best model on the CIFAR-100 dataset, Total testing accuracy is {:>8.6f}\n".format(
+            total_accuracy
+        ))
+        print("=" * 121 + "\n")
+        print("For the best model on the CIFAR-100 dataset, Total testing accuracy is {:>8.6f}".format(
+            total_accuracy
+        ))
+    
+    return

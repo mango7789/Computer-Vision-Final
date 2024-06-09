@@ -25,8 +25,6 @@ def seed_everything(seed: int=None):
     torch.backends.cudnn.deterministic = True
     
 
-# TODO: add a dataloader for CIFAR-10, since we need to find the impact from the 
-#       scale(size) of dataset.
 def get_cifar_10_dataloader(root: str='./data', batch_size: int=64, num_workers: int=2) -> DataLoader:
     """
     Get the train dataloader of the CIFAR-10 dataset.
@@ -221,6 +219,7 @@ def clear_log_file(log_file_path: str):
 
 
 if __name__ == '__main__':
+    # if you just want to download dataset on local, run this script
     get_cifar_10_dataloader()
     get_tinyimage_dataloader()
     get_cifar_100_dataloader()
