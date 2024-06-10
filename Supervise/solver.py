@@ -10,17 +10,16 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import MultiStepLR
 from torchvision.models import resnet18
-from byol_pytorch import BYOL
 
 from utils import seed_everything, get_cifar_10_dataloader, get_tinyimage_dataloader, get_cifar_100_dataloader, clear_log_file
-
+from byol import BYOL
 
 def train_byol(
         epochs: int=40,
-        lr: float=0.003,
+        lr: float=0.0003,
         hidden_dim: int=4096,
         output_dim: int=256,
-        update_rate: float=0.996,
+        update_rate: float=0.99,
         save: bool=False,
         **kwargs
     ) -> resnet18:
@@ -30,10 +29,10 @@ def train_byol(
     
     Args:
     - epochs: The number of training epochs, default is 40.
-    - lr: The learning rate of the optimizer, default is 0.003.
+    - lr: The learning rate of the optimizer, default is 0.0003.
     - hidden_dim: The dimension of the projection space, default is 4096.
     - output_dim: The dimension of the prediction space, default is 256.
-    - update_rate: The update rate of the target by moving average, default is 0.996.
+    - update_rate: The update rate of the target by moving average, default is 0.99.
     - save: Boolean, whether the model should be saved.
     - kwargs: Contain `seed`, `data_root`, `batch_size`, `num_workers`, 
         `weight_decay` and `lr_configs`.
@@ -61,7 +60,7 @@ def train_byol(
     seed_everything(seed)
     
     # get the dataloader
-    train_loader = get_cifar_10_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
+    train_loader = get_tinyimage_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
     
     # get the device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -71,7 +70,7 @@ def train_byol(
     base_encoder.fc = nn.Identity()
     model = BYOL(
         net=base_encoder, 
-        image_size=32,
+        image_size=64,
         hidden_layer='avgpool',
         projection_size=output_dim,
         projection_hidden_size=hidden_dim, 
@@ -134,7 +133,7 @@ def train_byol(
         scheduler.step()
         training_loss = running_loss / samples
         
-        logger.info("[Epoch {:>2} / {:>2}], Training loss is {:>8.6f}".format(epoch + 1, epochs, training_loss))
+        logger.info("[Epoch {:>2} / {:>2}], Training loss is {:>10.8f}".format(epoch + 1, epochs, training_loss))
         
 
     # save the trained byol model
@@ -506,7 +505,7 @@ def train_linear_classifier(
             # compute accuracy
             accuracy = (predicted == test_labels).float().mean().item()
             
-            logger.info("[Epoch {:>2} / {:>2}], Validation loss is {:>8.6f}, Validation accuracy is {:>8.6f}".format(
+            logger.info("[Epoch {:>3} / {:>3}], Validation loss is {:>8.6f}, Validation accuracy is {:>8.6f}".format(
                 epoch + 1, epochs, validation_loss, accuracy 
             ))
             
