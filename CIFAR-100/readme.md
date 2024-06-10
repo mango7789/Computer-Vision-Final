@@ -34,28 +34,30 @@ CIFAR-100
 ### 数据集&模型权重
 
 - 数据集
-  - 无需手动下载，训练时若本地不存在会自动进行下载，可指定数据集根目录 `data_root` 
+  - 无需手动下载，训练时若本地不存在会自动进行下载，可指定数据集根目录 `root` 
 - 模型权重
-  - 在本任务的根目录(即 `Supervise/`)下新建`model`文件夹
+  - 新建`model`文件夹，手动下载[模型权重](https://drive.google.com/drive/folders/1pV74DSM_MMEqIT9KZygSfciS4wUiW370?usp=drive_link)，将其放入`model`文件夹下
+  - 或者在终端中输入以下命令，自动进行下载
     ```bash
+    pip install gdown
     mkdir -p ./model
-    ```
-  - 下载模型权重，将其放入`model`文件夹下
-    - [模型权重地址](https://drive.google.com/drive/folders/1pV74DSM_MMEqIT9KZygSfciS4wUiW370?usp=drive_link)
+    gdown --folder https://drive.google.com/drive/folders/1pV74DSM_MMEqIT9KZygSfciS4wUiW370 -O ./model
+    ``` 
 
 ### 训练&测试
 
 > 注意：默认工作目录为`./CIFAR-100`
 
-- 训练（提供多种方式）
+- 训练
+  - 参数
+    - 在 `config.yaml` 配置文件中进行修改
   - 训练单个配置
-    - 修改 `config.yaml` 配置文件中的参数，运行 `train.py` 文件
-    - 或直接使用命令行工具运行，可指定参数
+    - 直接使用命令行工具运行，可指定参数
       ```bash
       python ./train.py --epochs 20 --fc_lr 0.01 --save
       ```
   - 批量训练
-    - 在bash终端中输入以下命令，可在shell脚本中修改对应参数
+    - 在bash终端中输入以下命令，可在配置文件中修改或shell脚本中指定参数
       ```bash
       chmod +x train.sh
       ./train.sh
@@ -63,7 +65,7 @@ CIFAR-100
 > [!NOTE]
 > 部分参数如`seed`, `momentum`, `gamma`, `step_size` 和 `weight_decay` 未在`train.py`中指定，需要自行在配置文件中修改  
 - 测试
-  - 在终端中运行以下命令，将会输出模型在测试集上的准确率，测试结果将会保存在`./logs`文件夹下，名称为`<model>-accuracy.txt`
+  - 在终端中运行以下命令，将会输出模型在测试集上的准确率，测试结果会输出到终端，且会保存在`./logs`文件夹下，名称为`[cnn, vit]-accuracy.txt`
     ```bash
     python ./test.py --path ./model/CNN-CIFAR100.pth
     python ./test.py --path ./model/ViT-CIFAR100.pth

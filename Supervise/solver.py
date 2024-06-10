@@ -110,22 +110,22 @@ def train_byol(
         
         samples = 0
         running_loss = 0
+        
         for img, _ in tqdm(train_loader):
             
             optimizer.zero_grad()
             
-            # inspect the image from two different views  
             img = img.to(device)
-                 
+            # inspect the image from two different views  
             loss = model(img)
             
             # backward pass and optimization
             loss.backward()
             optimizer.step()
             
+            # add loss and samples
             running_loss += loss.item()
-
-            samples += img.size(0)   # add the batch size
+            samples += img.size(0)   
             
             # update target network
             model.update_moving_average()
@@ -133,7 +133,7 @@ def train_byol(
         scheduler.step()
         training_loss = running_loss / samples
         
-        logger.info("[Epoch {:>2} / {:>2}], Training loss is {:>10.8f}".format(epoch + 1, epochs, training_loss))
+        logger.info("[Epoch {:>3} / {:>3}], Training loss is {:>10.8f}".format(epoch + 1, epochs, training_loss))
         
 
     # save the trained byol model
@@ -489,7 +489,7 @@ def train_linear_classifier(
         optimizer.step()
         scheduler.step()
         
-        logger.info("[Epoch {:>2} / {:>2}], Training loss is {:>8.6f}".format(epoch + 1, epochs, loss.item()))
+        logger.info("[Epoch {:>3} / {:>3}], Training loss is {:>8.6f}".format(epoch + 1, epochs, loss.item()))
 
         # evaluate the classifier
         classifier.eval()
