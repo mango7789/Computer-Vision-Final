@@ -80,7 +80,7 @@ def train_byol(
     
     # define optimizer and scheduler
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
-    scheduler = MultiStepLR(optimizer, milestones=[int(epochs * 0.5), int(epochs * 0.75)], gamma=0.1)
+    scheduler = MultiStepLR(optimizer, milestones=[int(epochs * 0.6), int(epochs * 0.8)], gamma=0.1)
     
     # set the configuration for the logger
     log_directory = os.path.join(output_dir, 'BYOL')
@@ -150,13 +150,116 @@ def train_byol(
     return base_encoder
 
 
-def fetch_resnet18() -> resnet18:
+def fine_tune_resnet18(
+        epochs: int=20,
+        lr: float=0.001,
+        save: bool=False,
+        **kwargs
+    ) -> resnet18:
     """
-    Return the pretrained ResNet-18 on ImageNet.
+    Fine tune the pretrained ResNet-18 on ImageNet for CIFAR-100 classification.
+    
+    Args:
+    - epochs: Number of training epochs, default is 20.
+    - lr: Learning rate, default is 0.001.
+    - save: Whether the model should be saved, default is False.
     """
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    ############################################################################
+    #                            initialization                                #
+    ############################################################################    
+    
+    # unpack other hyper-parameters
+    seed = kwargs.pop('seed', 603)
+    data_root = kwargs.pop('data_root', './data/')
+    output_dir = kwargs.pop('output_dir', 'logs')
+    batch_size = kwargs.pop('batch_size', 64)
+    num_workers = kwargs.pop('num_workers', 2)
+    weight_decay = kwargs.pop('weight_decay', 1e-4)
+    lr_configs = kwargs.pop('lr_configs', {})
+
+    # throw an error if there are extra keyword arguments
+    if len(kwargs) > 0:
+        extra = ", ".join('"%s"' % k for k in list(kwargs.keys()))
+        raise ValueError("Unrecognized arguments %s" % extra)
+    
+    # set the random seed to make the results reproducible
+    seed_everything(seed)
+    
+    # get the dataloader
+    train_loader, _ = get_cifar_100_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
+    
+    # get the device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        
+    # define the model
     model = resnet18(weights="ResNet18_Weights.IMAGENET1K_V1").to(device)
     model.fc = nn.Identity()
+    
+    # define the loss function
+    criterion = nn.CrossEntropyLoss()
+    
+    # define optimizer & scheduler
+    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
+    scheduler = MultiStepLR(optimizer, milestones=[int(epochs * 0.6), int(epochs * 0.8)], gamma=0.1)
+
+    # set the configuration for the logger
+    log_directory = os.path.join(output_dir, 'ResNet-18', 'ImageNet')
+    if not os.path.exists(log_directory):
+        os.makedirs(log_directory)
+    log_file_path = os.path.join(log_directory, '{}--{}--{}.log'.format(epochs, lr, batch_size))
+    
+    clear_log_file(log_file_path)
+    
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        handlers=[
+            logging.FileHandler(log_file_path),  
+            logging.StreamHandler()             
+        ]
+    )
+    
+    logger = logging.getLogger(__name__)
+    
+    ############################################################################
+    #                               training                                   #
+    ############################################################################  
+    
+    model.train()
+    for epoch in range(epochs):
+        
+        samples = 0
+        running_loss = 0.0
+        for inputs, labels in tqdm(train_loader):
+            inputs, labels = inputs.to(device), labels.to(device)
+            outputs = model(inputs)
+            
+            loss = criterion(outputs, labels)
+            loss.backward()
+            
+            optimizer.step()
+            optimizer.zero_grad()
+            
+            samples += inputs.size(0)
+            running_loss += loss.item() * inputs.size(0)
+        
+        scheduler.step()
+        
+        training_loss = running_loss / samples
+        
+        logger.info("[Epoch {:>2} / {:>2}], Training loss is {:>8.6f}".format(epoch + 1, epochs, training_loss))
+    
+    # save the fine-tuned resnet18 model
+    if save:
+        save_path = 'resnet_with_pretrain.pth'
+        if not os.path.exists('./model'):
+            os.mkdir('./model')
+        torch.save(model.state_dict(), os.path.join('./model', save_path))
+    
+    # close the logger 
+    logging.shutdown()
+    
     return model
 
 
@@ -210,10 +313,10 @@ def train_resnet18(
     
     # define optimizer & scheduler
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
-    scheduler = MultiStepLR(optimizer, milestones=[10, 15], gamma=0.1)
+    scheduler = MultiStepLR(optimizer, milestones=[int(epochs * 0.6), int(epochs * 0.8)], gamma=0.1)
 
     # set the configuration for the logger
-    log_directory = os.path.join(output_dir, 'ResNet-18')
+    log_directory = os.path.join(output_dir, 'ResNet-18', 'CIFAR-100')
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
     log_file_path = os.path.join(log_directory, '{}--{}--{}.log'.format(epochs, lr, batch_size))
@@ -302,28 +405,25 @@ def extract_features(encoder: nn.Module, data_loader: DataLoader) -> Tuple[torch
 
 class MLPClassifier(nn.Module):
     """
-    Multi-Layper Perceptron. Used for classifying the features extracted (learned) from the encoder.
+    Multi-Layer Perceptron. Used for classifying the features extracted (learned) from the encoder.
     """
-    def __init__(self, input_dim: int, num_classes: int=100):
+    def __init__(self, input_dim: int = 512, num_classes: int = 100):
         super(MLPClassifier, self).__init__()
-        self.fc1 = nn.Linear(input_dim, 512)
-        self.bn1 = nn.BatchNorm1d(512)
-        self.fc2 = nn.Linear(512, 256)
-        self.bn2 = nn.BatchNorm1d(256)
-        self.fc3 = nn.Linear(256, num_classes)
-        self.dropout = nn.Dropout(0.5)
+        self.fc1 = nn.Linear(input_dim, 256)
+        self.bn1 = nn.BatchNorm1d(256)  
+        self.fc2 = nn.Linear(256, num_classes)
+        self.dropout = nn.Dropout(0.5)  
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.dropout(F.relu(self.bn1(self.fc1(x))))
-        x = self.dropout(F.relu(self.bn2(self.fc2(x))))
-        x = self.fc3(x)
-        return x    
+        x = self.dropout(F.relu(self.bn1(self.fc1(x))))  
+        x = self.fc2(x)  
+        return x
 
 
 def train_linear_classifier(
         train_features: torch.Tensor, train_labels: torch.Tensor, 
         test_features: torch.Tensor, test_labels: torch.Tensor,
-        epochs: int=100, learning_rate: float=0.001, 
+        epochs: int=100, learning_rate: float=0.005, 
         type: str=Literal['self_supervise', 'supervise_with_pretrain', 'supervise_no_pretrain'],
         save: bool=False
     ) -> float:
@@ -344,10 +444,11 @@ def train_linear_classifier(
     # define criterion, optimizer and scheduler
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(classifier.parameters(), lr=learning_rate)
-    scheduler = MultiStepLR(optimizer, milestones=[40, 80], gamma=0.1)
+    scheduler = MultiStepLR(optimizer, milestones=[int(epochs * 0.6), int(epochs * 0.8)], gamma=0.1)
+
 
     # set the configuration for the logger
-    log_directory = os.path.join('./logs', 'linear_classifier')
+    log_directory = os.path.join('./logs', 'Linear-Classifier')
     os.makedirs(log_directory, exist_ok=True)
     log_file_path = os.path.join(log_directory, '{}.log'.format(type))
     
@@ -389,11 +490,12 @@ def train_linear_classifier(
         optimizer.step()
         scheduler.step()
         
-        logger.info("[Epoch {:>2} / {:>2}], Training loss is {:>8.6f}".format(epoch + 1, epochs, loss / train_features.size(0)))
+        logger.info("[Epoch {:>2} / {:>2}], Training loss is {:>8.6f}".format(epoch + 1, epochs, loss.item()))
 
         # evaluate the classifier
         classifier.eval()
         with torch.no_grad():
+            
             outputs = classifier(test_features)
             _, predicted = torch.max(outputs, 1)
             

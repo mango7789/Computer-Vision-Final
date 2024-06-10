@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 from torchvision.models import resnet18
 from utils import get_cifar_100_dataloader
-from solver import train_byol, train_resnet18, extract_features, train_linear_classifier
+from solver import train_byol, fine_tune_resnet18, train_resnet18, extract_features, train_linear_classifier
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -15,6 +15,8 @@ with open('config.yaml', 'r') as f:
 BYOL_TRAIN_CONFIG = config['stream'] | config['common'] | config['train']['byol']
 RESNET_TRAIN_CONFIG = config['stream'] | config['common'] | config['train']['resnet']
 LINEAR_TRAIN_CONFIG = config['common'] | config['train']['linear']
+
+# subfunctions
 
 def byol(args):
     train_byol(
@@ -32,6 +34,16 @@ def byol(args):
     )
 
 def resnet(args):
+    fine_tune_resnet18(
+        epochs=args.epochs,
+        lr=args.lr,
+        save=args.save,
+        seed=args.seed,
+        data_root=args.root,
+        batch_size=args.batch_size,
+        num_workers=args.num_workers,
+        weight_decay=args.weight_decay
+    )
     train_resnet18(
         epochs=args.epochs,
         lr=args.lr,
@@ -42,6 +54,8 @@ def resnet(args):
         num_workers=args.num_workers,
         weight_decay=args.weight_decay
     )
+    
+    
 
 def linear(args):
     model = resnet18()
@@ -58,6 +72,8 @@ def linear(args):
         type=args.type, save=args.save
     )
 
+
+# main parser
 
 def train():
     parser = argparse.ArgumentParser(description='Training models on the Tiny-ImageNet dataset.')

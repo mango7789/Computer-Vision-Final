@@ -10,20 +10,9 @@ python $TRAIN_SCRIPT byol --save
 echo "BYOL model training completed and saved."
 
 
-# fetch the pretrained ResNet-18 model
-echo "Fetching the pretrained ResNet-18 model..."
-python -c "
-import torch
-from solver import fetch_resnet18
-
-model = fetch_resnet18()
-torch.save(model.state_dict(), './model/resnet_with_pretrain.pth')
-"
-echo "Pretrained ResNet-18 model fetched and saved."
-
 
 # train the ResNet-18 model without pretraining
-echo "Training the ResNet-18 model without pretraining..."
+echo "Training the ResNet-18 model..."
 python $TRAIN_SCRIPT resnet --save
 echo "ResNet-18 model training completed and saved."
 
