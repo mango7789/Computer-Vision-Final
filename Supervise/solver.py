@@ -20,7 +20,7 @@ def train_byol(
         lr: float=0.003,
         hidden_dim: int=4096,
         output_dim: int=256,
-        update_rate: float=0.99,
+        update_rate: float=0.996,
         save: bool=False,
         **kwargs
     ) -> resnet18:
@@ -33,7 +33,7 @@ def train_byol(
     - lr: The learning rate of the optimizer, default is 0.003.
     - hidden_dim: The dimension of the projection space, default is 4096.
     - output_dim: The dimension of the prediction space, default is 256.
-    - update_rate: The update rate of the target by moving average, default is 0.99.
+    - update_rate: The update rate of the target by moving average, default is 0.996.
     - save: Boolean, whether the model should be saved.
     - kwargs: Contain `seed`, `data_root`, `batch_size`, `num_workers`, 
         `weight_decay` and `lr_configs`.
@@ -71,7 +71,7 @@ def train_byol(
     base_encoder.fc = nn.Identity()
     model = BYOL(
         net=base_encoder, 
-        image_size=224,
+        image_size=32,
         hidden_layer='avgpool',
         projection_size=output_dim,
         projection_hidden_size=hidden_dim, 
@@ -108,7 +108,7 @@ def train_byol(
     
     model.train()
     for epoch in range(epochs):
-        # TODO: The calculation of the loss.
+        
         samples = 0
         running_loss = 0
         for img, _ in tqdm(train_loader):
@@ -343,7 +343,7 @@ def train_linear_classifier(
 
     # define criterion, optimizer and scheduler
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(classifier.parameters(), lr=learning_rate)
+    optimizer = optim.Adam(classifier.parameters(), lr=learning_rate)
     scheduler = MultiStepLR(optimizer, milestones=[40, 80], gamma=0.1)
 
     # set the configuration for the logger
