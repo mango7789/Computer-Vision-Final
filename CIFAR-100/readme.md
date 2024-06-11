@@ -11,16 +11,17 @@ CIFAR-100
     ├──CNN-CIFAR100.pth         # CNN模型权重
     └──ViT-CIFAR100.pth         # ViT模型权重
 ├──logs             # 训练日志
-    ├──CNN/                     # CNN训练日志，包含loss和acc
-    ├──ViT/                     # ViT训练日志，包含loss和acc
-    ├──tensorboard/             # 由训练日志转换成的tensorboard文件
+    ├──CNN/...                  # CNN训练日志，包含loss和acc
+    ├──ViT/...                  # ViT训练日志，包含loss和acc
+    ├──tensorboard/...          # 由训练日志转换成的tensorboard文件
     ├──log2tensorboard.py       # 将训练日志转换成tensorboard的脚本
     ├──grid-search-accuracy.txt # Grid-Search不同超参数组合的acc
     ├──cnn-accuracy.txt         # 训练好的CNN模型在测试集上准确率
     └──vit-accuracy.txt         # 训练好的ViT模型在测试集上准确率
 ├──img              # tensorboard截图
-    ├──accuracy/                # 训练过程acc的截图
-    └──loss/                    # 训练过程loss的截图
+    ├──accuracy/...             # 训练过程acc的截图
+    ├──loss/...                 # 训练过程loss的截图
+    └──model/...                # 模型架构图
 ├──config.yaml      # 参数配置文件
 ├──utils.py         # 辅助函数，包括导入数据集，获取模型，处理日志
 ├──solver.py        # 求解器，包含训练和测试的主函数
@@ -29,6 +30,9 @@ CIFAR-100
 ├──test.py          # 测试的parser，可指定模型路径
 └──readme.md      
 ```
+
+> [!TIP]
+> 日志文件的名称含义为`{epochs}--{ft_lr}--{fc_lr}--{batch_size}.log`，分隔符为`--`
 
 
 ### 数据集&模型权重
@@ -52,12 +56,12 @@ CIFAR-100
   - 参数
     - 在 `config.yaml` 配置文件中进行修改
   - 训练单个配置
-    - 直接使用命令行工具运行，可指定参数
+    - 直接使用命令行工具运行，可指定参数，未指定的参数采用配置文件中的默认值
       ```bash
       python ./train.py --epochs 20 --fc_lr 0.01 --save
       ```
   - 批量训练
-    - 在bash终端中输入以下命令，可在配置文件中修改或shell脚本中指定参数
+    - 在终端中输入以下命令，可在配置文件中修改或 `train.sh` 脚本中指定参数
       ```bash
       chmod +x train.sh
       ./train.sh
