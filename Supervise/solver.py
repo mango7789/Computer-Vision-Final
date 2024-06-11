@@ -13,9 +13,11 @@ from torchvision.models import resnet18
 
 from utils import seed_everything, get_cifar_10_dataloader, get_tinyimage_dataloader, get_cifar_100_dataloader, clear_log_file
 from byol import BYOL
+from SimCLR import ResNetSimCLR
+
 
 def train_byol(
-        epochs: int=40,
+        epochs: int=20,
         lr: float=0.0003,
         hidden_dim: int=4096,
         output_dim: int=256,
@@ -28,7 +30,7 @@ def train_byol(
     the trained online encoder.
     
     Args:
-    - epochs: The number of training epochs, default is 40.
+    - epochs: The number of training epochs, default is 20.
     - lr: The learning rate of the optimizer, default is 0.0003.
     - hidden_dim: The dimension of the projection space, default is 4096.
     - output_dim: The dimension of the prediction space, default is 256.
@@ -66,20 +68,22 @@ def train_byol(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
     # define the model with ResNet-18 as the basic encoder
-    base_encoder = resnet18(weights=None).to(device)
-    base_encoder.fc = nn.Identity()
-    model = BYOL(
-        net=base_encoder, 
-        image_size=64,
-        hidden_layer='avgpool',
-        projection_size=output_dim,
-        projection_hidden_size=hidden_dim, 
-        moving_average_decay=update_rate
-    ).to(device)
+    base_encoder = resnet18(weights=None, num_classes=100).to(device)
+    # base_encoder.fc = nn.Identity()
+    # model = BYOL(
+    #     net=base_encoder, 
+    #     image_size=64,
+    #     hidden_layer='avgpool',
+    #     projection_size=output_dim,
+    #     projection_hidden_size=hidden_dim, 
+    #     moving_average_decay=update_rate
+    # ).to(device)
+    model = ResNetSimCLR(base_encoder).to(device)
     
     # define optimizer and scheduler
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
     scheduler = MultiStepLR(optimizer, milestones=[int(epochs * 0.6), int(epochs * 0.8)], gamma=0.1)
+    criterion = nn.CrossEntropyLoss().to(device)
     
     # set the configuration for the logger
     log_directory = os.path.join(output_dir, 'BYOL')
@@ -111,31 +115,37 @@ def train_byol(
         samples = 0
         running_loss = 0
         
-        for img, _ in tqdm(train_loader):
+        for images, _ in tqdm(train_loader):
             
             optimizer.zero_grad()
             
-            img = img.to(device)
-            # inspect the image from two different views  
-            loss = model(img)
+            images = torch.cat(images, dim=0)
+            images = images.to(device)
             
+            # compute the feature and logits
+            features = model(images)
+            logits, labels = ResNetSimCLR.info_nce_loss(batch_size, features, device)
+            loss = criterion(logits, labels)
+                            
             # backward pass and optimization
             loss.backward()
             optimizer.step()
             
             # add loss and samples
             running_loss += loss.item()
-            samples += img.size(0)   
+            samples += batch_size  
             
-            # update target network
-            model.update_moving_average()
+            # # update target network
+            # model.update_moving_average()
         
         scheduler.step()
         training_loss = running_loss / samples
         
         logger.info("[Epoch {:>3} / {:>3}], Training loss is {:>10.8f}".format(epoch + 1, epochs, training_loss))
         
-
+    # drop the last fc layer
+    base_encoder.fc = nn.Identity()
+    
     # save the trained byol model
     if save:
         save_path = 'byol.pth'

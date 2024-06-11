@@ -4,6 +4,7 @@ import zipfile
 import urllib.request
 from PIL import Image
 from tqdm import tqdm
+import numpy as np
 
 import torch
 import torch.nn as nn
@@ -44,6 +45,78 @@ def get_cifar_10_dataloader(root: str='./data', batch_size: int=64, num_workers:
     
     return train_loader
 
+
+class GaussianBlur(object):
+    """
+    Blur a single image on CPU. Modified from the source code in 
+    https://github.com/sthalles/SimCLR/blob/master/data_aug/gaussian_blur.py.
+    """
+    def __init__(self, kernel_size: float | int):
+        
+        # make the kernel size an odd and positive integer 
+        radias = kernel_size // 2
+        kernel_size = radias * 2 + 1
+        
+        # horizontal
+        self.blur_h = nn.Conv2d(
+            3, 3, kernel_size=(kernel_size, 1),
+            stride=1, padding=0, bias=False, groups=3
+        )
+        
+        # vertical
+        self.blur_v = nn.Conv2d(
+            3, 3, kernel_size=(1, kernel_size),
+            stride=1, padding=0, bias=False, groups=3
+        )
+        self.k = kernel_size
+        self.r = radias
+
+        self.blur = nn.Sequential(
+            nn.ReflectionPad2d(radias),
+            self.blur_h,
+            self.blur_v
+        )
+
+        self.pil_to_tensor = transforms.ToTensor()
+        self.tensor_to_pil = transforms.ToPILImage()
+
+    def __call__(self, img):
+        """
+        Convert PIL image to tensor, apply GaussianBlur on it. Then reconvert it to PIL image.
+        """
+        img = self.pil_to_tensor(img).unsqueeze(0)
+
+        sigma = np.random.uniform(0.1, 2.0)
+        x = np.arange(-self.r, self.r + 1)
+        x = np.exp(-np.power(x, 2) / (2 * sigma * sigma))
+        x = x / x.sum()
+        x = torch.from_numpy(x).view(1, -1).repeat(3, 1)
+
+        self.blur_h.weight.data.copy_(x.view(3, 1, self.k, 1))
+        self.blur_v.weight.data.copy_(x.view(3, 1, 1, self.k))
+
+        with torch.no_grad():
+            img = self.blur(img)
+            img = img.squeeze()
+
+        img = self.tensor_to_pil(img)
+
+        return img
+    
+    
+class ContrastiveLearningViewGenerator(object):
+    """
+    Take two random crops of one image as the query and key. Modified from the source code
+    in https://github.com/sthalles/SimCLR/blob/master/data_aug/view_generator.py.
+    """
+    def __init__(self, base_transform, n_views: int=2):
+        self.base_transform = base_transform
+        self.n_views = n_views
+
+    def __call__(self, x):
+        return [self.base_transform(x) for _ in range(self.n_views)]
+    
+    
 class TinyImageNetDataset(Dataset):
     """
     A subclass of class `Dataset` implemented in `torch.utils.data`, used specifically for the
@@ -139,8 +212,8 @@ class TinyImageNetDataset(Dataset):
         # transform the original image
         image = self.transform(image)
         
-        return image, label    
-
+        return image, label 
+        
     
 def get_tinyimage_dataloader(root: str='./data', batch_size: int=64, num_workers: int=2) -> DataLoader:
     """
@@ -159,12 +232,17 @@ def get_tinyimage_dataloader(root: str='./data', batch_size: int=64, num_workers
     
     # define data augmentation and normalization for training dataset
     transform = transforms.Compose([
-        transforms.ToTensor(),
+        transforms.RandomResizedCrop(64),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomApply([transforms.ColorJitter(0.8, 0.8, 0.8, 0.2)], p=0.8),
+        transforms.RandomGrayscale(p=0.2),
+        GaussianBlur(kernel_size=int(0.1 * 64)),
+        transforms.ToTensor()
     ])
     
     # get the training dataloader
-    train_set = TinyImageNetDataset(root_dir=root, transform=transform)
-    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers)
+    train_set = TinyImageNetDataset(root_dir=root, transform=ContrastiveLearningViewGenerator(transform))
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True, drop_last=True)
     
     return train_loader
 
