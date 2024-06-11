@@ -24,26 +24,6 @@ def seed_everything(seed: int=None):
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
     torch.backends.cudnn.deterministic = True
-    
-
-def get_cifar_10_dataloader(root: str='./data', batch_size: int=64, num_workers: int=2) -> DataLoader:
-    """
-    Get the train dataloader of the CIFAR-10 dataset.
-    """
-    
-    # transform the training image to tensor
-    transform = transforms.Compose([
-        transforms.ToTensor(),
-    ])
-    
-    # if the dataset doesn't exist in local, download it automatically
-    download = (not os.path.exists(root)) or ('cifar-10-batches-py' not in os.listdir(root))
-    
-    # get the training and testing dataloader
-    train_set = torchvision.datasets.CIFAR10(root=root, train=True, download=download, transform=transform)
-    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers)
-    
-    return train_loader
 
 
 class GaussianBlur(object):
@@ -116,6 +96,31 @@ class ContrastiveLearningViewGenerator(object):
     def __call__(self, x):
         return [self.base_transform(x) for _ in range(self.n_views)]
     
+    
+def get_cifar_10_dataloader(root: str='./data', batch_size: int=64, num_workers: int=2) -> DataLoader:
+    """
+    Get the train dataloader of the CIFAR-10 dataset.
+    """
+    
+    # transform the training image to tensor
+    transform = transforms.Compose([
+        transforms.RandomResizedCrop(32),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomApply([transforms.ColorJitter(0.8, 0.8, 0.8, 0.2)], p=0.8),
+        transforms.RandomGrayscale(p=0.2),
+        GaussianBlur(kernel_size=int(0.1 * 32)),
+        transforms.ToTensor()
+    ])
+    
+    # if the dataset doesn't exist in local, download it automatically
+    download = (not os.path.exists(root)) or ('cifar-10-batches-py' not in os.listdir(root))
+    
+    # get the training and testing dataloader
+    train_set = torchvision.datasets.CIFAR10(root=root, train=True, download=download, transform=ContrastiveLearningViewGenerator(transform))
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True, drop_last=True)
+    
+    return train_loader
+
     
 class TinyImageNetDataset(Dataset):
     """

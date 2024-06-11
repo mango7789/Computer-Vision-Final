@@ -18,7 +18,7 @@ from SimCLR import ResNetSimCLR
 
 def train_byol(
         epochs: int=20,
-        lr: float=0.0003,
+        lr: float=0.001,
         hidden_dim: int=4096,
         output_dim: int=256,
         update_rate: float=0.99,
@@ -31,7 +31,7 @@ def train_byol(
     
     Args:
     - epochs: The number of training epochs, default is 20.
-    - lr: The learning rate of the optimizer, default is 0.0003.
+    - lr: The learning rate of the optimizer, default is 0.001.
     - hidden_dim: The dimension of the projection space, default is 4096.
     - output_dim: The dimension of the prediction space, default is 256.
     - update_rate: The update rate of the target by moving average, default is 0.99.
@@ -68,7 +68,8 @@ def train_byol(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
     # define the model with ResNet-18 as the basic encoder
-    base_encoder = resnet18(weights=None, num_classes=100).to(device)
+    base_encoder = resnet18(weights="ResNet18_Weights.IMAGENET1K_V1").to(device)
+    base_encoder.fc = nn.Linear(base_encoder.fc.in_features, 128)
     # base_encoder.fc = nn.Identity()
     # model = BYOL(
     #     net=base_encoder, 
@@ -432,7 +433,7 @@ class MLPClassifier(nn.Module):
 def train_linear_classifier(
         train_features: torch.Tensor, train_labels: torch.Tensor, 
         test_features: torch.Tensor, test_labels: torch.Tensor,
-        epochs: int=100, learning_rate: float=0.005, 
+        epochs: int=100, learning_rate: float=0.0003, 
         type: str=Literal['self_supervise', 'supervise_with_pretrain', 'supervise_no_pretrain'],
         save: bool=False
     ) -> float:
@@ -452,7 +453,7 @@ def train_linear_classifier(
 
     # define criterion, optimizer and scheduler
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(classifier.parameters(), lr=learning_rate)
+    optimizer = optim.Adam(classifier.parameters(), lr=learning_rate, weight_decay=0.0008)
     scheduler = MultiStepLR(optimizer, milestones=[int(epochs * 0.6), int(epochs * 0.8)], gamma=0.1)
 
 
