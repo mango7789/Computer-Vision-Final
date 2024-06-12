@@ -2,7 +2,7 @@ import yaml
 import argparse
 import torch
 import torch.nn as nn
-from torchvision.models import resnet18
+from torchvision.models import resnet18, resnet50
 from utils import get_cifar_100_dataloader
 from solver import train_simclr, fine_tune_resnet18, train_resnet18, extract_features, train_linear_classifier
 
@@ -54,7 +54,7 @@ def resnet(args):
     )
     
 def linear(args):
-    model = resnet18()
+    model = resnet50()
     model.fc = nn.Identity()
     model.load_state_dict(torch.load(args.model))
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
