@@ -29,7 +29,7 @@ def train_simclr(
     Args:
     - epochs: The number of training epochs.
     - lr: The learning rate of the optimizer.
-    - temperature: The hyper-parameter of the 
+    - temperature: The temperature of the NCE loss.
     - save: Boolean, whether the model should be saved.
     - kwargs: Contain `seed`, `data_root`, `batch_size`, `num_workers`, 
         `weight_decay` and `lr_configs`.
@@ -57,25 +57,28 @@ def train_simclr(
     seed_everything(seed)
     
     # get the dataloader
-    train_loader = get_tinyimage_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
+    train_loader = get_cifar_10_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
     
     # get the device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
     # define the model with ResNet-18 as the basic encoder
-    base_encoder = resnet18(weights="ResNet18_Weights.IMAGENET1K_V1").to(device)
+    base_encoder = resnet18(weights=None).to(device)
     base_encoder.fc = nn.Linear(base_encoder.fc.in_features, 128)
     model = ResNetSimCLR(base_encoder).to(device)
     
     # define optimizer and scheduler
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
     criterion = nn.CrossEntropyLoss().to(device)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        optimizer, T_max=len(train_loader), eta_min=0, last_epoch=-1
+    )
     
     # set the configuration for the logger
     log_directory = os.path.join(output_dir, 'SimCLR')
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
-    log_file_path = os.path.join(log_directory, '{}--{}--{}--{}.log'.format(epochs, lr))
+    log_file_path = os.path.join(log_directory, '{}--{}--{}.log'.format(epochs, lr, temperature))
     
     clear_log_file(log_file_path)
     
@@ -123,6 +126,8 @@ def train_simclr(
             
             # # update target network
             # model.update_moving_average()
+        
+        scheduler.step()
         
         training_loss = running_loss / samples
         
