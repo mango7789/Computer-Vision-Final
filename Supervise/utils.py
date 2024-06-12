@@ -108,7 +108,7 @@ def get_cifar_10_dataloader(root: str='./data', batch_size: int=64, num_workers:
         transforms.RandomHorizontalFlip(),
         transforms.RandomApply([transforms.ColorJitter(0.8, 0.8, 0.8, 0.2)], p=0.8),
         transforms.RandomGrayscale(p=0.2),
-        GaussianBlur(kernel_size=int(0.1 * 32)),
+        transforms.GaussianBlur(kernel_size=int(0.1 * 32)),
         transforms.ToTensor()
     ])
     

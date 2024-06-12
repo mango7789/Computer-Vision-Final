@@ -1,7 +1,7 @@
 import os
 import logging 
 from tqdm import tqdm
-from typing import Tuple, Literal
+from typing import Tuple, Literal, Iterator
 
 import torch
 import torch.nn as nn
@@ -16,25 +16,19 @@ from byol import BYOL
 from SimCLR import ResNetSimCLR
 
 
-def train_byol(
+def train_simclr(
         epochs: int=20,
         lr: float=0.001,
-        hidden_dim: int=4096,
-        output_dim: int=256,
-        update_rate: float=0.99,
         save: bool=False,
         **kwargs
-    ) -> resnet18:
+    ):
     """
-    Train BYOL on the Tiny-ImageNet dataset with ResNet-18 as the base encoder, return
+    Train SimCLR on the Tiny-ImageNet dataset with ResNet-18 as the base encoder, return
     the trained online encoder.
     
     Args:
     - epochs: The number of training epochs, default is 20.
     - lr: The learning rate of the optimizer, default is 0.001.
-    - hidden_dim: The dimension of the projection space, default is 4096.
-    - output_dim: The dimension of the prediction space, default is 256.
-    - update_rate: The update rate of the target by moving average, default is 0.99.
     - save: Boolean, whether the model should be saved.
     - kwargs: Contain `seed`, `data_root`, `batch_size`, `num_workers`, 
         `weight_decay` and `lr_configs`.
@@ -83,14 +77,13 @@ def train_byol(
     
     # define optimizer and scheduler
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
-    scheduler = MultiStepLR(optimizer, milestones=[int(epochs * 0.6), int(epochs * 0.8)], gamma=0.1)
     criterion = nn.CrossEntropyLoss().to(device)
     
     # set the configuration for the logger
-    log_directory = os.path.join(output_dir, 'BYOL')
+    log_directory = os.path.join(output_dir, 'SimCLR')
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
-    log_file_path = os.path.join(log_directory, '{}--{}--{}--{}.log'.format(epochs, lr, hidden_dim, output_dim))
+    log_file_path = os.path.join(log_directory, '{}--{}--{}--{}.log'.format(epochs, lr))
     
     clear_log_file(log_file_path)
     
@@ -139,12 +132,12 @@ def train_byol(
             # # update target network
             # model.update_moving_average()
         
-        scheduler.step()
         training_loss = running_loss / samples
         
         logger.info("[Epoch {:>3} / {:>3}], Training loss is {:>10.8f}".format(epoch + 1, epochs, training_loss))
         
     # drop the last fc layer
+    base_encoder = model.backbone
     base_encoder.fc = nn.Identity()
     
     # save the trained byol model
@@ -157,15 +150,13 @@ def train_byol(
     # close the logger 
     logging.shutdown()
     
-    return base_encoder
-
 
 def fine_tune_resnet18(
         epochs: int=20,
         lr: float=0.001,
         save: bool=False,
         **kwargs
-    ) -> resnet18:
+    ):
     """
     Fine tune the pretrained ResNet-18 on ImageNet for CIFAR-100 classification.
     
@@ -203,7 +194,7 @@ def fine_tune_resnet18(
         
     # define the model
     model = resnet18(weights="ResNet18_Weights.IMAGENET1K_V1").to(device)
-    model.fc = nn.Identity()
+    model.fc = nn.Linear(model.fc.in_features, 100)
     
     # define the loss function
     criterion = nn.CrossEntropyLoss()
@@ -265,20 +256,19 @@ def fine_tune_resnet18(
         save_path = 'resnet_with_pretrain.pth'
         if not os.path.exists('./model'):
             os.mkdir('./model')
+        model.fc = nn.Identity()
         torch.save(model.state_dict(), os.path.join('./model', save_path))
     
     # close the logger 
     logging.shutdown()
     
-    return model
-
 
 def train_resnet18(
         epochs: int=20,
         lr: float=0.001,
         save: bool=False,
         **kwargs
-    ) -> resnet18:
+    ):
     """
     Train ResNet-18 from scratch on the CIFAR-100 dataset using supervised learning.
     
@@ -316,7 +306,7 @@ def train_resnet18(
         
     # define the model
     model = resnet18(weights=None).to(device)
-    model.fc = nn.Identity()
+    model.fc = nn.Linear(model.fc.in_features, 100)
     
     # define the loss function
     criterion = nn.CrossEntropyLoss()
@@ -378,13 +368,12 @@ def train_resnet18(
         save_path = 'resnet_no_pretrain.pth'
         if not os.path.exists('./model'):
             os.mkdir('./model')
+        model.fc = nn.Identity()
         torch.save(model.state_dict(), os.path.join('./model', save_path))
     
     # close the logger 
     logging.shutdown()
     
-    return model
-
 
 def extract_features(encoder: nn.Module, data_loader: DataLoader) -> Tuple[torch.Tensor, torch.Tensor]:
     """
@@ -402,7 +391,7 @@ def extract_features(encoder: nn.Module, data_loader: DataLoader) -> Tuple[torch
     encoder.eval()
     features, labels = [], []
     with torch.no_grad():
-        for images, label in data_loader:
+        for images, label in tqdm(data_loader):
             images = images.to(device)
             
             feature = encoder(images).view(images.size(0), -1)
@@ -433,7 +422,7 @@ class MLPClassifier(nn.Module):
 def train_linear_classifier(
         train_features: torch.Tensor, train_labels: torch.Tensor, 
         test_features: torch.Tensor, test_labels: torch.Tensor,
-        epochs: int=100, learning_rate: float=0.0003, 
+        epochs: int, learning_rate: float, 
         type: str=Literal['self_supervise', 'supervise_with_pretrain', 'supervise_no_pretrain'],
         save: bool=False
     ) -> float:
@@ -454,7 +443,6 @@ def train_linear_classifier(
     # define criterion, optimizer and scheduler
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(classifier.parameters(), lr=learning_rate, weight_decay=0.0008)
-    scheduler = MultiStepLR(optimizer, milestones=[int(epochs * 0.6), int(epochs * 0.8)], gamma=0.1)
 
 
     # set the configuration for the logger
@@ -498,7 +486,6 @@ def train_linear_classifier(
         loss.backward()
         
         optimizer.step()
-        scheduler.step()
         
         logger.info("[Epoch {:>3} / {:>3}], Training loss is {:>8.6f}".format(epoch + 1, epochs, loss.item()))
 
