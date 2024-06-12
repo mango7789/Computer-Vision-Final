@@ -13,14 +13,14 @@
   - 运行
     - 若要对单个网络进行训练，可在终端中运行以下命令
       ```bash
-      # train the byol model
-      python train.py byol --epochs 10 --lr 0.001 -save
+      # train the simclr model
+      python train.py simclr --epochs 10 --lr 0.001 -save
       # train the ResNet-18 model
       python train.py resnet --epochs 15 --lr 0.005 --seed 42
       # train the linear classifier
-      python train.py linear --epochs 150 --model ./model/byol.pth --type 'self_supervise'
+      python train.py linear --epochs 150 --model ./model/simclr.pth --type 'self_supervise'
       # for more info about the parser, run help
-      python train.py [byol, resent, linear] --help
+      python train.py [simclr, resent, linear] --help
       ``` 
     - 若要对全部网络进行训练，只需在bash终端中输入以下命令，可在shell脚本中修改对应参数
       ```bash

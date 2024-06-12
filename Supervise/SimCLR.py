@@ -22,7 +22,7 @@ class ResNetSimCLR(nn.Module):
         return self.backbone(x)
 
     @staticmethod
-    def info_nce_loss(batch_size: int, features: torch.Tensor, device: torch.device, temperature: float=0.07) -> Tuple[torch.Tensor, torch.Tensor]:
+    def info_nce_loss(batch_size: int, features: torch.Tensor, device: torch.device, temperature: float) -> Tuple[torch.Tensor, torch.Tensor]:
 
         labels = torch.cat([torch.arange(batch_size) for _ in range(2)], dim=0)
         

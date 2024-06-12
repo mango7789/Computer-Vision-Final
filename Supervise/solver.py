@@ -1,7 +1,7 @@
 import os
 import logging 
 from tqdm import tqdm
-from typing import Tuple, Literal, Iterator
+from typing import Tuple, Literal
 
 import torch
 import torch.nn as nn
@@ -9,17 +9,17 @@ import torch.optim as optim
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import MultiStepLR
-from torchvision.models import resnet18
+from torchvision.models import resnet18, resnet50
 
 from utils import seed_everything, get_cifar_10_dataloader, get_tinyimage_dataloader, get_cifar_100_dataloader, clear_log_file
-from byol import BYOL
 from SimCLR import ResNetSimCLR
 
 
 def train_simclr(
-        epochs: int=20,
-        lr: float=0.001,
-        save: bool=False,
+        epochs: int,
+        lr: float,
+        temperature: float,
+        save: bool,
         **kwargs
     ):
     """
@@ -27,8 +27,9 @@ def train_simclr(
     the trained online encoder.
     
     Args:
-    - epochs: The number of training epochs, default is 20.
-    - lr: The learning rate of the optimizer, default is 0.001.
+    - epochs: The number of training epochs.
+    - lr: The learning rate of the optimizer.
+    - temperature: The hyper-parameter of the 
     - save: Boolean, whether the model should be saved.
     - kwargs: Contain `seed`, `data_root`, `batch_size`, `num_workers`, 
         `weight_decay` and `lr_configs`.
@@ -64,15 +65,6 @@ def train_simclr(
     # define the model with ResNet-18 as the basic encoder
     base_encoder = resnet18(weights="ResNet18_Weights.IMAGENET1K_V1").to(device)
     base_encoder.fc = nn.Linear(base_encoder.fc.in_features, 128)
-    # base_encoder.fc = nn.Identity()
-    # model = BYOL(
-    #     net=base_encoder, 
-    #     image_size=64,
-    #     hidden_layer='avgpool',
-    #     projection_size=output_dim,
-    #     projection_hidden_size=hidden_dim, 
-    #     moving_average_decay=update_rate
-    # ).to(device)
     model = ResNetSimCLR(base_encoder).to(device)
     
     # define optimizer and scheduler
@@ -118,7 +110,7 @@ def train_simclr(
             
             # compute the feature and logits
             features = model(images)
-            logits, labels = ResNetSimCLR.info_nce_loss(batch_size, features, device)
+            logits, labels = ResNetSimCLR.info_nce_loss(batch_size, features, device, temperature)
             loss = criterion(logits, labels)
                             
             # backward pass and optimization
@@ -140,9 +132,9 @@ def train_simclr(
     base_encoder = model.backbone
     base_encoder.fc = nn.Identity()
     
-    # save the trained byol model
+    # save the trained simclr model
     if save:
-        save_path = 'byol.pth'
+        save_path = 'simclr.pth'
         if not os.path.exists('./model'):
             os.mkdir('./model')
         torch.save(base_encoder.state_dict(), os.path.join('./model', save_path))
@@ -319,7 +311,7 @@ def train_resnet18(
     log_directory = os.path.join(output_dir, 'ResNet-18', 'CIFAR-100')
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
-    log_file_path = os.path.join(log_directory, '{}--{}--{}.log'.format(epochs, lr, batch_size))
+    log_file_path = os.path.join(log_directory, '{}--{}.log'.format(epochs, lr, batch_size))
     
     clear_log_file(log_file_path)
     

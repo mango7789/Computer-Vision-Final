@@ -23,6 +23,7 @@ def simclr(args):
         epochs=args.epochs,
         lr=args.lr,
         save=args.save,
+        temperature=args.temp,
         seed=args.seed,
         data_root=args.root,
         batch_size=args.batch_size,
@@ -79,6 +80,7 @@ def train():
     
     simclr_parser.add_argument('--epochs'     , type=int  , default=SIMCLR_TRAIN_CONFIG['epochs']       , help='Number of training epochs for simclr')
     simclr_parser.add_argument('--lr'         , type=float, default=SIMCLR_TRAIN_CONFIG['lr']           , help='Learning rate of the optimizer')
+    simclr_parser.add_argument('--temp'       , type=float, default=SIMCLR_TRAIN_CONFIG['temp']         , help='Temperature of the NCE loss')
     
     simclr_parser.add_argument('--save'       , action='store_true'                                   , help='Save the trained simclr model')
     simclr_parser.add_argument('--seed'       , type=int  , default=SIMCLR_TRAIN_CONFIG['seed']         , help='Random seed for reproducibility')
