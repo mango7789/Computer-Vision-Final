@@ -7,5 +7,6 @@
 *.pth
 **/data/
 # ignore nerf framework code and sample code
+**/LLFF/
 **/nerf-pytorch/
-**/tutorial
+**/tutorial/
