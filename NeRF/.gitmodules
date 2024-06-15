@@ -1,0 +1,9 @@
+[submodule "LLFF"]
+	path = LLFF
+	url = https://github.com/Fyusion/LLFF.git
+
+[submodule "nerf-pytorch"]
+	path = nerf-pytorch
+	url = https://github.com/yenchenlin/nerf-pytorch.git
+
+
