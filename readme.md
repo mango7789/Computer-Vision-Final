@@ -34,7 +34,7 @@
 - https://github.com/mango7789/Computer-Vision-Final/tree/main/Supervise
 
 #### 报告链接
-- https://cn.overleaf.com/project/665d8af812d89a8812ae678b
+- https://github.com/mango7789/Computer-Vision-Final/tree/main/Supervise/report/Supervise.pdf
 
 ---
 
