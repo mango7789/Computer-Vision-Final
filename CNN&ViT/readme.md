@@ -13,7 +13,7 @@ CNN&ViT
 ├──data             # 数据集目录，运行训练代码后自动生成
     ├──cifar-100-python.tar.gz  # CIFAR-100压缩包
     └──cifar-100-python         # CIFAR-100数据集
-├──model            # 模型权重，需要自建并放入模型权重文件
+├──model            # 模型权重文件夹
     ├──CNN-CIFAR100.pth         # CNN模型权重
     └──ViT-CIFAR100.pth         # ViT模型权重
 ├──logs             # 训练日志

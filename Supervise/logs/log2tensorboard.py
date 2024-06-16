@@ -70,12 +70,35 @@ def write_linear_acc(root: str = './Linear-Classifier'):
                  f'{model_type}/Validation Accuracy': test_acc[i],
             }, i + 1)
     
+def write_resnet_loss(root: str = './ResNet-18'):
+    dir_list = os.listdir(root)
+    train_loss_pattern = re.compile(r'Training loss is (\d+\.\d+)')
+        
+    def get_single_byol(full_path: str) -> List:
+        train_losses = []
+        with open(full_path, 'r') as f:
+            for line in f:
+                train_loss_match = train_loss_pattern.search(line)
+                if train_loss_match:
+                    train_loss = float(train_loss_match.group(1))
+                    train_losses.append(train_loss)
+        return train_losses
+
+    losses = get_single_byol(os.path.join(root, dir_list[0]))
     
+    for i in range(20):
+        writer.add_scalars('ResNet/Training Loss', {
+            'Pretrain': losses[i],
+            'Random Init': losses[20 + i],
+        }, i + 1)
+
+
 if __name__ == '__main__':
     
     writer = SummaryWriter(log_dir='./tensorboard')
     
     write_train_loss()
     write_linear_acc()
+    write_resnet_loss()
     
     writer.close()
