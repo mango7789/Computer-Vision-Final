@@ -1,0 +1,10 @@
+2024-06-04 07:01:05 - INFO - Train with configuration ==> ft_lr: 0.00010, fc_lr: 0.01000, batch_size: 128
+2024-06-04 07:09:19 - INFO - [Epoch  1 /  3, Model ViT], Training loss is 1.639913
+2024-06-04 07:09:53 - INFO - [Epoch  1 /  3, Model ViT], Testing loss is 0.543289, Top-5 accuracy is 0.976500, Top-1 accuracy is 0.849400
+2024-06-04 07:18:07 - INFO - [Epoch  2 /  3, Model ViT], Training loss is 1.346899
+2024-06-04 07:18:42 - INFO - [Epoch  2 /  3, Model ViT], Testing loss is 0.451528, Top-5 accuracy is 0.982900, Top-1 accuracy is 0.869200
+2024-06-04 07:26:56 - INFO - [Epoch  3 /  3, Model ViT], Training loss is 1.270258
+2024-06-04 07:27:31 - INFO - [Epoch  3 /  3, Model ViT], Testing loss is 0.419706, Top-5 accuracy is 0.984800, Top-1 accuracy is 0.873900
+2024-06-04 07:27:32 - DEBUG - Resetting dropped connection: huggingface.co
+2024-06-04 07:27:32 - DEBUG - https://huggingface.co:443 "HEAD /WinKawaks/vit-small-patch16-224/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-04 07:27:32 - DEBUG - https://huggingface.co:443 "HEAD /WinKawaks/vit-small-patch16-224/resolve/main/config.json HTTP/1.1" 200 0
