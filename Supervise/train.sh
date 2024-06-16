@@ -4,10 +4,10 @@ TRAIN_SCRIPT="train.py"
 mkdir -p ./model
 
 
-# train the SimCLR model
-echo "Training the SimCLR model..."
-python $TRAIN_SCRIPT simclr --save
-echo "SimCLR model training completed and saved."
+# train the BYOL model
+echo "Training the BYOL model..."
+python $TRAIN_SCRIPT byol --save
+echo "BYOL model training completed and saved."
 
 
 # train the ResNet-18 model without pretraining
@@ -17,7 +17,7 @@ echo "ResNet-18 model training completed and saved."
 
 
 # extract and train the linear classifier for each model type
-MODELS=("simclr.pth" "resnet_with_pretrain.pth" "resnet_no_pretrain.pth")
+MODELS=("byol.pth" "resnet_with_pretrain.pth" "resnet_no_pretrain.pth")
 TYPES=("self_supervise" "supervise_with_pretrain" "supervise_no_pretrain")
 
 

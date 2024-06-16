@@ -9,27 +9,32 @@ import torch.optim as optim
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import MultiStepLR
-from torchvision.models import resnet18, resnet50
+from torchvision.models import resnet18
 
 from utils import seed_everything, get_cifar_10_dataloader, get_tinyimage_dataloader, get_cifar_100_dataloader, clear_log_file
+from byol import BYOL
 from SimCLR import ResNetSimCLR
 
 
-def train_simclr(
-        epochs: int,
-        lr: float,
-        temperature: float,
-        save: bool,
+def train_byol(
+        epochs: int=40,
+        lr: float=0.0003,
+        hidden_dim: int=4096,
+        output_dim: int=256,
+        update_rate: float=0.99,
+        save: bool=False,
         **kwargs
     ):
     """
-    Train SimCLR on the Tiny-ImageNet dataset with ResNet-18 as the base encoder, return
+    Train BYOL on the Tiny-ImageNet dataset with ResNet-18 as the base encoder, return
     the trained online encoder.
     
     Args:
-    - epochs: The number of training epochs.
-    - lr: The learning rate of the optimizer.
-    - temperature: The temperature of the NCE loss.
+    - epochs: The number of training epochs, default is 40.
+    - lr: The learning rate of the optimizer, default is 0.0003.
+    - hidden_dim: The dimension of the projection space, default is 4096.
+    - output_dim: The dimension of the prediction space, default is 256.
+    - update_rate: The update rate of the target by moving average, default is 0.99.
     - save: Boolean, whether the model should be saved.
     - kwargs: Contain `seed`, `data_root`, `batch_size`, `num_workers`, 
         `weight_decay` and `lr_configs`.
@@ -45,7 +50,6 @@ def train_simclr(
     output_dir = kwargs.pop('output_dir', 'logs')
     batch_size = kwargs.pop('batch_size', 64)
     num_workers = kwargs.pop('num_workers', 2)
-    weight_decay = kwargs.pop('weight_decay', 1e-4)
     lr_configs = kwargs.pop('lr_configs', {})
 
     # throw an error if there are extra keyword arguments
@@ -64,21 +68,25 @@ def train_simclr(
         
     # define the model with ResNet-18 as the basic encoder
     base_encoder = resnet18(weights=None).to(device)
-    base_encoder.fc = nn.Linear(base_encoder.fc.in_features, 128)
-    model = ResNetSimCLR(base_encoder).to(device)
+    base_encoder.fc = nn.Identity()
+    model = BYOL(
+        net=base_encoder, 
+        image_size=32,
+        hidden_layer='avgpool',
+        projection_size=output_dim,
+        projection_hidden_size=hidden_dim, 
+        moving_average_decay=update_rate
+    ).to(device)
     
     # define optimizer and scheduler
-    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, **lr_configs)
-    criterion = nn.CrossEntropyLoss().to(device)
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-        optimizer, T_max=len(train_loader), eta_min=0, last_epoch=-1
-    )
+    optimizer = optim.Adam(model.parameters(), lr=lr, **lr_configs)
+    scheduler = MultiStepLR(optimizer, milestones=[int(epochs * 0.6), int(epochs * 0.8)], gamma=0.1)
     
     # set the configuration for the logger
-    log_directory = os.path.join(output_dir, 'SimCLR')
+    log_directory = os.path.join(output_dir, 'BYOL')
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
-    log_file_path = os.path.join(log_directory, '{}--{}--{}.log'.format(epochs, lr, temperature))
+    log_file_path = os.path.join(log_directory, '{}--{}--{}--{}.log'.format(epochs, lr, hidden_dim, output_dim))
     
     clear_log_file(log_file_path)
     
@@ -104,49 +112,76 @@ def train_simclr(
         samples = 0
         running_loss = 0
         
-        for images, _ in tqdm(train_loader):
+        for img, _ in tqdm(train_loader):
             
             optimizer.zero_grad()
             
-            images = torch.cat(images, dim=0)
-            images = images.to(device)
+            img = img.to(device)
+            # inspect the image from two different views  
+            loss = model(img)
             
-            # compute the feature and logits
-            features = model(images)
-            logits, labels = ResNetSimCLR.info_nce_loss(batch_size, features, device, temperature)
-            loss = criterion(logits, labels)
-                            
             # backward pass and optimization
             loss.backward()
             optimizer.step()
             
             # add loss and samples
             running_loss += loss.item()
-            samples += batch_size  
+            samples += img.size(0)   
             
-            # # update target network
-            # model.update_moving_average()
+            # update target network
+            model.update_moving_average()
         
         scheduler.step()
-        
         training_loss = running_loss / samples
         
         logger.info("[Epoch {:>3} / {:>3}], Training loss is {:>10.8f}".format(epoch + 1, epochs, training_loss))
-        
-    # drop the last fc layer
-    base_encoder = model.backbone
-    base_encoder.fc = nn.Identity()
     
-    # save the trained simclr model
+    # drop the last fc layer
+    base_encoder.fc = nn.Linear(512, 100)
+    base_encoder.to(device)
+    
+    # define the loss function
+    criterion = nn.CrossEntropyLoss()
+    
+    # define optimizer & scheduler
+    optimizer = optim.Adam(base_encoder.parameters(), lr=0.001, **lr_configs)
+
+    base_encoder.train()
+    logger.info("Fine-tuning the trained byol model...")
+    train_loader, _ = get_cifar_100_dataloader()
+    for epoch in range(20):
+        samples = 0
+        running_loss = 0.0
+        
+        for inputs, labels in tqdm(train_loader):
+            
+            inputs, labels = inputs.to(device), labels.to(device)
+            outputs = base_encoder(inputs)
+            
+            loss = criterion(outputs, labels)
+            loss.backward()
+            
+            optimizer.step()
+            optimizer.zero_grad()
+            
+            samples += inputs.size(0)
+            running_loss += loss.item() * inputs.size(0)
+                
+        training_loss = running_loss / samples
+        
+        logger.info("[Epoch {:>2} / {:>2}], Training loss is {:>8.6f}".format(epoch + 1, 20, training_loss))
+    
+    # save the trained byol model
+    base_encoder.fc = nn.Identity()
     if save:
-        save_path = 'simclr.pth'
+        save_path = 'byol.pth'
         if not os.path.exists('./model'):
             os.mkdir('./model')
         torch.save(base_encoder.state_dict(), os.path.join('./model', save_path))
     
     # close the logger 
     logging.shutdown()
-    
+        
 
 def fine_tune_resnet18(
         epochs: int=20,
@@ -190,8 +225,9 @@ def fine_tune_resnet18(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
     # define the model
-    model = resnet18(weights="ResNet18_Weights.IMAGENET1K_V1").to(device)
+    model = resnet18(weights="ResNet18_Weights.IMAGENET1K_V1")
     model.fc = nn.Linear(model.fc.in_features, 100)
+    model.to(device)
     
     # define the loss function
     criterion = nn.CrossEntropyLoss()
@@ -302,8 +338,9 @@ def train_resnet18(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
     # define the model
-    model = resnet18(weights=None).to(device)
+    model = resnet18(weights=None)
     model.fc = nn.Linear(model.fc.in_features, 100)
+    model.to(device)
     
     # define the loss function
     criterion = nn.CrossEntropyLoss()
@@ -405,14 +442,10 @@ class MLPClassifier(nn.Module):
     """
     def __init__(self, input_dim: int = 512, num_classes: int = 100):
         super(MLPClassifier, self).__init__()
-        self.fc1 = nn.Linear(input_dim, 256)
-        self.bn1 = nn.BatchNorm1d(256)  
-        self.fc2 = nn.Linear(256, num_classes)
-        self.dropout = nn.Dropout(0.5)  
+        self.fc = nn.Linear(input_dim, num_classes) 
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.dropout(F.relu(self.bn1(self.fc1(x))))  
-        x = self.fc2(x)  
+        x = self.fc(x)
         return x
 
 
