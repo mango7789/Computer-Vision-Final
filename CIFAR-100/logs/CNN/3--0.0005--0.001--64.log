@@ -1,7 +1,0 @@
-2024-06-04 09:27:05 - INFO - Train with configuration ==> ft_lr: 0.00050, fc_lr: 0.00100, batch_size:  64
-2024-06-04 09:35:58 - INFO - [Epoch  1 /  3, Model CNN], Training loss is 4.003420
-2024-06-04 09:36:28 - INFO - [Epoch  1 /  3, Model CNN], Testing loss is 2.373996, Top-5 accuracy is 0.830100, Top-1 accuracy is 0.520200
-2024-06-04 09:45:21 - INFO - [Epoch  2 /  3, Model CNN], Training loss is 2.062772
-2024-06-04 09:45:51 - INFO - [Epoch  2 /  3, Model CNN], Testing loss is 0.985297, Top-5 accuracy is 0.943900, Top-1 accuracy is 0.721200
-2024-06-04 09:54:44 - INFO - [Epoch  3 /  3, Model CNN], Training loss is 1.597680
-2024-06-04 09:55:14 - INFO - [Epoch  3 /  3, Model CNN], Testing loss is 0.808551, Top-5 accuracy is 0.964200, Top-1 accuracy is 0.771800

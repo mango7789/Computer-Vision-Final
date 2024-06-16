@@ -56,10 +56,10 @@
 </details>
 
 #### 代码地址
-- https://github.com/mango7789/Computer-Vision-Final/tree/main/CIFAR-100
+- https://github.com/mango7789/Computer-Vision-Final/tree/main/CNN&ViT
 
 #### 报告链接
-- https://github.com/mango7789/Computer-Vision-Final/blob/main/CIFAR-100/report/CIFAR100.pdf
+- https://github.com/mango7789/Computer-Vision-Final/blob/main/CNN&ViT/report/CNN&ViT.pdf
 
 ---
 

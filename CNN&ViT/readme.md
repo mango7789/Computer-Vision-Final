@@ -9,7 +9,7 @@
 ### 文件结构
 
 ```bash
-CIFAR-100
+CNN&ViT
 ├──data             # 数据集目录，运行训练代码后自动生成
     ├──cifar-100-python.tar.gz  # CIFAR-100压缩包
     └──cifar-100-python         # CIFAR-100数据集
@@ -56,7 +56,7 @@ CIFAR-100
 
 ### 训练&测试
 
-> 注意：默认工作目录为`./CIFAR-100`
+> 注意：默认工作目录为`./CNN&ViT`
 
 - 训练
   - 参数
