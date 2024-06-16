@@ -16,11 +16,12 @@ from byol import BYOL
 
 
 def train_byol(
-        epochs: int=40,
+        epochs: int=100,
         lr: float=0.0003,
         hidden_dim: int=4096,
         output_dim: int=256,
         update_rate: float=0.99,
+        data_type: str=Literal['cifar10', 'tinyimage'],
         save: bool=False,
         **kwargs
     ):
@@ -60,7 +61,15 @@ def train_byol(
     seed_everything(seed)
     
     # get the dataloader
-    train_loader = get_cifar_10_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
+    match data_type:
+        case 'cifar10': 
+            train_loader = get_cifar_10_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
+            image_size = 32
+        case 'tinyimage':
+            train_loader = get_tinyimage_dataloader(root=data_root, batch_size=batch_size, num_workers=num_workers)
+            image_size = 64
+        case _:
+            raise TypeError('Please give a vaild dataset name!')
     
     # get the device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -70,7 +79,7 @@ def train_byol(
     base_encoder.fc = nn.Identity()
     model = BYOL(
         net=base_encoder, 
-        image_size=32,
+        image_size=image_size,
         hidden_layer='avgpool',
         projection_size=output_dim,
         projection_hidden_size=hidden_dim, 
@@ -85,7 +94,7 @@ def train_byol(
     log_directory = os.path.join(output_dir, 'BYOL')
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
-    log_file_path = os.path.join(log_directory, '{}--{}--{}--{}.log'.format(epochs, lr, hidden_dim, output_dim))
+    log_file_path = os.path.join(log_directory, '{}--{}--{}--{}--{}.log'.format(epochs, lr, hidden_dim, output_dim, data_type))
     
     clear_log_file(log_file_path)
     
@@ -135,7 +144,6 @@ def train_byol(
         
         logger.info("[Epoch {:>3} / {:>3}], Training loss is {:>10.8f}".format(epoch + 1, epochs, training_loss))
     
-    # drop the last fc layer
     base_encoder.fc = nn.Linear(512, 100)
     base_encoder.to(device)
     
@@ -146,12 +154,9 @@ def train_byol(
     optimizer = optim.Adam(base_encoder.parameters(), lr=0.001, **lr_configs)
 
     base_encoder.train()
-    logger.info("Fine-tuning the trained byol model...")
     train_loader, _ = get_cifar_100_dataloader()
     for epoch in range(20):
-        samples = 0
-        running_loss = 0.0
-        
+
         for inputs, labels in tqdm(train_loader):
             
             inputs, labels = inputs.to(device), labels.to(device)
@@ -162,14 +167,7 @@ def train_byol(
             
             optimizer.step()
             optimizer.zero_grad()
-            
-            samples += inputs.size(0)
-            running_loss += loss.item() * inputs.size(0)
                 
-        training_loss = running_loss / samples
-        
-        logger.info("[Epoch {:>2} / {:>2}], Training loss is {:>8.6f}".format(epoch + 1, 20, training_loss))
-    
     # save the trained byol model
     base_encoder.fc = nn.Identity()
     if save:
@@ -562,7 +560,7 @@ def test_trained_model(encoder_path: str, classifier_path: str):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     # load the encoder
-    encoder = resnet18(weight=None)
+    encoder = resnet18(weights=None)
     encoder.fc = nn.Identity()
     encoder.load_state_dict(torch.load(encoder_path, map_location=device))
     encoder.to(device)
@@ -608,7 +606,7 @@ def test_trained_model(encoder_path: str, classifier_path: str):
     
     # test the model
     with torch.no_grad():
-        for data in test_loader:
+        for data in tqdm(test_loader):
             images, labels = data
             images, labels = images.to(device), labels.to(device)
             

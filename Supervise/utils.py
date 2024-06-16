@@ -25,19 +25,6 @@ def seed_everything(seed: int=None):
     torch.backends.cudnn.deterministic = True
 
     
-class ContrastiveLearningViewGenerator(object):
-    """
-    Take two random crops of one image as the query and key. Modified from the source code
-    in https://github.com/sthalles/SimCLR/blob/master/data_aug/view_generator.py.
-    """
-    def __init__(self, base_transform, n_views: int=2):
-        self.base_transform = base_transform
-        self.n_views = n_views
-
-    def __call__(self, x):
-        return [self.base_transform(x) for _ in range(self.n_views)]
-    
-    
 def get_cifar_10_dataloader(root: str='./data', batch_size: int=64, num_workers: int=2) -> DataLoader:
     """
     Get the train dataloader of the CIFAR-10 dataset.
@@ -173,16 +160,11 @@ def get_tinyimage_dataloader(root: str='./data', batch_size: int=64, num_workers
     
     # define data augmentation and normalization for training dataset
     transform = transforms.Compose([
-        transforms.RandomResizedCrop(64),
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomApply([transforms.ColorJitter(0.8, 0.8, 0.8, 0.2)], p=0.8),
-        transforms.RandomGrayscale(p=0.2),
-        GaussianBlur(kernel_size=int(0.1 * 64)),
         transforms.ToTensor()
     ])
     
     # get the training dataloader
-    train_set = TinyImageNetDataset(root_dir=root, transform=ContrastiveLearningViewGenerator(transform))
+    train_set = TinyImageNetDataset(root_dir=root, transform=transform)
     train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True, drop_last=True)
     
     return train_loader

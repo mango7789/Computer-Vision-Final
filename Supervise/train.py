@@ -25,6 +25,7 @@ def byol(args):
         hidden_dim=args.hidden_dim,
         output_dim=args.output_dim,
         update_rate=args.update_rate,
+        data_type=args.data_type,
         save=args.save,
         seed=args.seed,
         data_root=args.root,
@@ -86,6 +87,7 @@ def train():
     byol_parser.add_argument('--hidden_dim' , type=int  , default=BYOL_TRAIN_CONFIG['hidden_dim']   , help='Dimension of the projection space')
     byol_parser.add_argument('--output_dim' , type=int  , default=BYOL_TRAIN_CONFIG['output_dim']   , help='Dimension of the prediction space')
     byol_parser.add_argument('--update_rate', type=float, default=BYOL_TRAIN_CONFIG['update_rate']  , help='Update rate of the target by moving average')
+    byol_parser.add_argument('--data_type'  , type=str  , default=BYOL_TRAIN_CONFIG['data_type']    , help='The name of the pretrained dataset, should be in [cifar10, tinyimage]')
     
     byol_parser.add_argument('--save'       , action='store_true'                                   , help='Save the trained BYOL model')
     byol_parser.add_argument('--seed'       , type=int  , default=BYOL_TRAIN_CONFIG['seed']         , help='Random seed for reproducibility')
