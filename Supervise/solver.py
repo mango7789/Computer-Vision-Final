@@ -13,7 +13,6 @@ from torchvision.models import resnet18
 
 from utils import seed_everything, get_cifar_10_dataloader, get_tinyimage_dataloader, get_cifar_100_dataloader, clear_log_file
 from byol import BYOL
-from SimCLR import ResNetSimCLR
 
 
 def train_byol(
@@ -237,7 +236,7 @@ def fine_tune_resnet18(
     scheduler = MultiStepLR(optimizer, milestones=[int(epochs * 0.6), int(epochs * 0.8)], gamma=0.1)
 
     # set the configuration for the logger
-    log_directory = os.path.join(output_dir, 'ResNet-18', 'ImageNet')
+    log_directory = os.path.join(output_dir, 'ResNet-18')
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
     log_file_path = os.path.join(log_directory, '{}--{}--{}.log'.format(epochs, lr, batch_size))
@@ -350,12 +349,11 @@ def train_resnet18(
     scheduler = MultiStepLR(optimizer, milestones=[int(epochs * 0.6), int(epochs * 0.8)], gamma=0.1)
 
     # set the configuration for the logger
-    log_directory = os.path.join(output_dir, 'ResNet-18', 'CIFAR-100')
+    log_directory = os.path.join(output_dir, 'ResNet-18')
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
-    log_file_path = os.path.join(log_directory, '{}--{}.log'.format(epochs, lr, batch_size))
+    log_file_path = os.path.join(log_directory, '{}--{}--{}.log'.format(epochs, lr, batch_size))
     
-    clear_log_file(log_file_path)
     
     logging.basicConfig(
         level=logging.INFO,
