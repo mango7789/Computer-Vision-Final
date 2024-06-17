@@ -35,6 +35,7 @@ def train_byol(
     - hidden_dim: The dimension of the projection space, default is 4096.
     - output_dim: The dimension of the prediction space, default is 256.
     - update_rate: The update rate of the target by moving average, default is 0.99.
+    - data_type: The dataset used in BYOL, should be in ['cifar10', tinyimage].
     - save: Boolean, whether the model should be saved.
     - kwargs: Contain `seed`, `data_root`, `batch_size`, `num_workers`, 
         `weight_decay` and `lr_configs`.

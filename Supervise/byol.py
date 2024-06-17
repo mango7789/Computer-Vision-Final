@@ -1,3 +1,6 @@
+#! source: https://github.com/lucidrains/byol-pytorch
+#! modified some code snippets to fit into this task
+
 import copy
 import random
 from functools import wraps
