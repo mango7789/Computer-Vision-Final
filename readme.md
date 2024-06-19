@@ -10,6 +10,10 @@
 > - Python版本**要求**在**3.10及以上**，部分代码使用了3.10版本的特性（如`match`, `case`）  
 > - 任务要求可点击展开，显示“基本要求”和“提交要求”   
 > - 可点击**代码地址**跳转到对应的文件目录，每个目录下均有对应的`readme`文件，可根据其说明进行相应任务的训练和测试 
+> - 由于本仓库包含`.gitsubmodules`（即对NeRF框架仓库的引用），将其clone到本地时需使用如下命令
+    ```cmd
+    git clone --recursive https://github.com/mango7789/Computer-Vision-Final.git
+    ```
 
 
 ---
