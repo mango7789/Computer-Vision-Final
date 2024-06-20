@@ -2,21 +2,14 @@
 
 ### 文件结构
 
-### COLMAP
-- [下载地址](https://github.com/colmap/colmap)
-- [帮助文档](https://colmap.github.io/tutorial.html)
-  
-### NeRF框架地址
-- [框架主页](https://www.matthewtancik.com/nerf)
-- [Pytorch版代码](https://github.com/yenchenlin/nerf-pytorch)
-- 安装
-```cmd
-cd NeRF
-git clone https://github.com/yenchenlin/nerf-pytorch.git
-cd nerf-pytorch
-pip install -r requirements.txt
-```   
-
-### 原数据集&模型权重&视频链接
+### 模型权重&视频链接
 
 ### 训练&测试
+
+- 训练
+  - 运行`./train.sh`脚本，即可自动进行训练，可在`vasedeck.txt`文件中修改配置参数
+    ```cmd
+    chmod +x ./train.sh
+    ./train.sh
+    ```
+- 测试
