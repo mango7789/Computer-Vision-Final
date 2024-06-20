@@ -6,6 +6,7 @@
 # ignore all large files: `.pth` model parameter, `./data` dataset
 *.pth
 **/data/
+**/report/
 # ignore nerf framework code and sample code
 **/tutorial/
 *.ipynb_checkpoints*

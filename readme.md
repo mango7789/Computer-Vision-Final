@@ -37,9 +37,6 @@
 #### 代码地址
 - https://github.com/mango7789/Computer-Vision-Final/tree/main/Supervise
 
-#### 报告链接
-- https://github.com/mango7789/Computer-Vision-Final/tree/main/Supervise/report/Supervise.pdf
-
 ---
 
 ### 任务2：在CIFAR-100数据集上比较基于Transformer和CNN的图像分类模型
@@ -61,9 +58,6 @@
 
 #### 代码地址
 - https://github.com/mango7789/Computer-Vision-Final/tree/main/CNN&ViT
-
-#### 报告链接
-- https://github.com/mango7789/Computer-Vision-Final/blob/main/CNN&ViT/report/CNN&ViT.pdf
 
 ---
 
