@@ -26,3 +26,9 @@
     chmod +x ./test.sh
     ./test.sh
     ``` 
+
+- 可视化结果
+  - 在终端中输入以下命令，点击 [http://localhost:6006/]() 打开tensorboard进行查看
+    ```bash
+    tensorboard --logdir ./logs/tensorboard
+    ``` 

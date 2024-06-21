@@ -156,10 +156,15 @@ def train_byol(
 
     base_encoder.train()
     train_loader, _ = get_cifar_100_dataloader()
+    
+    total_batchs = len(train_loader)
+    
     for epoch in range(20):
-
+        
+        batchs = 0
         for inputs, labels in tqdm(train_loader):
-            
+            if (batchs := batchs + 1) > total_batchs // 10:
+                break
             inputs, labels = inputs.to(device), labels.to(device)
             outputs = base_encoder(inputs)
             

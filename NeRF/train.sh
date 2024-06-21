@@ -1,11 +1,10 @@
 #!/bin/bash
 
-# set the root dir and configuration file
-ROOT_DIR="data/llff/vasedeck"
-CONFIG_FILE="vasedeck.txt"
+# set the configuration file
+CONFIG_FILE="config.txt"
 
-# generate pose file
-python LLFF/imgs2poses.py $ROOT_DIR
+# make log dir
+mkdir -p ./logs
 
 # train NeRF
-python nerf-pytorch/run_nerf.py --config $CONFIG_FILE > output.txt
+python nerf-pytorch/run_nerf.py --config $CONFIG_FILE >> logs/hhsw.txt

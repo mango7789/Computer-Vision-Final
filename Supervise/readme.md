@@ -92,7 +92,7 @@ Supervise
   # test the supervise without pretrain
   python test.py --encoder ./model/resnet_no_pretrain.pth --classifier ./model/supervise_no_pretrain.pth
   ```
-- 可视化训练过程
+- 可视化结果
   - 在终端中输入以下命令，点击 [http://localhost:6006/]() 打开tensorboard进行查看
     ```bash
     tensorboard --logdir ./logs/tensorboard
