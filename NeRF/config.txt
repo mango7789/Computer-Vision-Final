@@ -1,4 +1,4 @@
-expname = hhsw_test
+expname = hhsw
 basedir = ./logs
 datadir = ./data/llff/hhsw
 dataset_type = llff

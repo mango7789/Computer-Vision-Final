@@ -4,4 +4,4 @@
 CONFIG_FILE="config.txt"
 
 # test nerf 
-python run_nerf.py --config $CONFIG_FILE --render_only
+python nerf-pytorch/run_nerf.py --config $CONFIG_FILE --render_only
